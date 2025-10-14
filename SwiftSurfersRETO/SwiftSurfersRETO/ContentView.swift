@@ -1,21 +1,31 @@
 //
 //  ContentView.swift
-//  SwiftSurfersRETO
+//  ElementosReutilizables
 //
-//  Created by Salvador Ancer on 14/10/25.
+//  Created by Maria Cavada on 10/10/25.
 //
 
 import SwiftUI
 
 struct ContentView: View {
+    
+    @State private var tabSelection = 1
+    
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("hola-2")
+        TabView(selection: $tabSelection) {
+            Text("Tab Content 1")
+                .tag(1)
+            Text("Tab Content 2")
+                .tag(2)
+            Text("Tab Content 3")
+                .tag(3)
+            Text("Tab Content 4")
+                .tag(4)
         }
-        .padding()
+        .overlay(alignment: .bottom){
+            CustomTabView(tabSelection: $tabSelection)
+        }
+        
     }
 }
 
