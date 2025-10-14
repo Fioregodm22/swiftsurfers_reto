@@ -48,7 +48,7 @@ struct FinalizarServicioView: View {
             //PARTE RESUMEN
             VStack {
                 ZStack(alignment: .top) {
-                    RoundedRectangle(cornerRadius: 10)
+                    RoundedRectangle(cornerRadius: 20)
                         .fill(Color(blancoClaro))
                         .frame(width: 350, height: 180)
 
@@ -72,7 +72,7 @@ struct FinalizarServicioView: View {
                         .font(.system(size: 20))
                         .padding(.horizontal, 12)
                         .padding(.vertical, 6)
-                        .background(RoundedRectangle(cornerRadius: 10).fill(Color(naranja)))
+                        .background(RoundedRectangle(cornerRadius: 20).fill(Color(naranja)))
                         .foregroundStyle(.white)
                         .offset(y: -18)
                 }
@@ -82,7 +82,7 @@ struct FinalizarServicioView: View {
             //PARTE KILOMETRAJE
             VStack {
                 ZStack(alignment: .top) {
-                    RoundedRectangle(cornerRadius: 10)
+                    RoundedRectangle(cornerRadius: 20)
                         .fill(Color(blancoClaro))
                         .frame(width: 350, height: 280)
 
@@ -100,7 +100,7 @@ struct FinalizarServicioView: View {
                                 Spacer()
                                 TextField("",value: $kmFinal, format: .number)
                                     .frame(width: 230, height: 40)
-                                    .background(RoundedRectangle(cornerRadius: 10).fill(Color(gris1)))
+                                    .background(RoundedRectangle(cornerRadius: 20).fill(Color(gris1)))
                                 Spacer()
                                 
                             }
@@ -109,7 +109,7 @@ struct FinalizarServicioView: View {
                             HStack {
                                 Spacer()
                                 ZStack {
-                                    RoundedRectangle(cornerRadius: 10)
+                                    RoundedRectangle(cornerRadius: 20)
                                         .fill(Color(naranja)).opacity(0.7)
                                     Text("Distancia recorrida: \(distanciaRecorrida.map { $0.formatted() } ?? "") km")
                                         .foregroundColor(.white)
@@ -132,7 +132,7 @@ struct FinalizarServicioView: View {
                         .font(.system(size: 20))
                         .padding(.horizontal, 12)
                         .padding(.vertical, 6)
-                        .background(RoundedRectangle(cornerRadius: 10).fill(Color(naranja)))
+                        .background(RoundedRectangle(cornerRadius: 20).fill(Color(naranja)))
                         .foregroundStyle(.white)
                         .offset(y: -18)
                 }
