@@ -15,7 +15,7 @@ struct ServicioIniciado: View {
                     Color(red: 1/255, green: 104/255, blue: 138/255)
                     Color.white
                         .frame(width: 280, height: 550)
-                        .cornerRadius(40)
+                        .cornerRadius(20)
                 }
                 Text("Servicio iniciado correctamente")
                     .padding(.top, 40)
@@ -33,11 +33,12 @@ struct ServicioIniciado: View {
                 }
                 .padding()
                 .fontWeight(.bold)
+                .padding(.horizontal, 50)
                 .background(Color(red: 1/255, green:104/255, blue:138/255))
                 .font(.system(size: 20))
                 .foregroundStyle(Color.white)
-                .cornerRadius(40)
-                .padding(.top, 370)
+                .cornerRadius(20)
+                .padding(.top, 300)
                 
                 
             }
