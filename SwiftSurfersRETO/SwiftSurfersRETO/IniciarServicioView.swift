@@ -52,7 +52,7 @@ struct IniciarServicioView: View {
                         Text ("# ID: 001")
                             .padding(.leading, 5)
                             .foregroundStyle(Color.white)
-                            .font(.system(size: 15))
+                            .font(.system(size: 20))
                     }
                 }
                 .padding(.top, 5)
@@ -136,9 +136,9 @@ struct IniciarServicioView: View {
                         // redirigir a ConfirmarInicioView
                     }
                 }
-                    .padding(.top, 10)
-                    .padding(.bottom, 10)
-                    .padding(.horizontal, 52)
+                    .padding(.top, 20)
+                    .padding(.bottom, 20)
+                    .padding(.horizontal, 110)
                     .foregroundStyle(.white)
                     .background(RoundedRectangle(cornerRadius: 20).fill(Color(azul)))
                     .bold(true)
@@ -148,14 +148,14 @@ struct IniciarServicioView: View {
                         Text("Debes ingresar un kilometraje válido")
                     }
                 Spacer()
-                    .frame(height:20)
+                    .frame(height:40)
                 
                 Button("CANCELAR") {
                     // redirigir a DetalleServicioView
                 }
-                    .padding(.top, 10)
-                    .padding(.bottom, 10)
-                    .padding(.horizontal, 40)
+                    .padding(.top, 20)
+                    .padding(.bottom, 20)
+                    .padding(.horizontal, 100)
                     .foregroundStyle(.white)
                     .background(RoundedRectangle(cornerRadius: 20).fill(Color(gris4)))
                     .bold(true)
