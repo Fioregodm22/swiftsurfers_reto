@@ -5,12 +5,15 @@
 //  Created by Alumno on 14/10/25.
 //
 
+<<<<<<< Updated upstream
 //  LoginView.swift
 //  sp2_A01285851
 //
 //  Created by Alumno on 13/10/25.
 //
 
+=======
+>>>>>>> Stashed changes
 import SwiftUI
 
 struct LoginView: View {
@@ -87,7 +90,11 @@ struct LoginView: View {
                                 
                                 
                             }
+<<<<<<< Updated upstream
                             .frame(width: 160, height: 54)
+=======
+                            .frame(width: 160, height: 50)
+>>>>>>> Stashed changes
                             .background(Color(red: 1/255, green: 104/255 ,blue: 138/255))
                             .cornerRadius(20)
                             .foregroundColor(.white)
@@ -124,4 +131,7 @@ struct LoginView: View {
 #Preview {
     LoginView()
 }
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
