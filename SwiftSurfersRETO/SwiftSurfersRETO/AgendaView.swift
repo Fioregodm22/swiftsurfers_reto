@@ -62,7 +62,6 @@ struct AgendaView: View {
             .frame(height: 120)
             .padding(.bottom, 10)
             
-            // BOTONES HOY / MAÑANA
             HStack {
                 Button("Hoy") {}
                     .padding(.vertical, 13)
@@ -88,10 +87,14 @@ struct AgendaView: View {
             }
             
             Spacer()
-            ReCuadro(servicio: .ejemplo)
-            Spacer()
-            ReCuadro(servicio: .ejemplo)
-            Spacer()
+            ScrollView{
+                VStack{
+                    ReCuadro(servicio: .ejemplo)
+                    ReCuadro(servicio: .ejemplo2)
+                    ReCuadro(servicio: .ejemplo)
+                    Spacer()
+                }
+            }
         }
     }
 }
