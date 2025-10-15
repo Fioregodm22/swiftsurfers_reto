@@ -76,11 +76,13 @@ struct FinalizarServicioView: View {
                     VStack(alignment: .leading, spacing: 16) {
                         Text("Hora de inicio:")
                             .padding(.bottom, 7)
+                            .padding(.horizontal, 2)
                             .foregroundStyle(gris4)
 
                         HStack(alignment: .firstTextBaseline) {
                                 Text("Hora de finalización:")
                                     .foregroundStyle(gris4)
+                                    .padding(.horizontal, 2)
 
                                 Spacer()
 
@@ -89,13 +91,13 @@ struct FinalizarServicioView: View {
                                         .foregroundStyle(gris4)
                                     }
 
-                                Divider().frame(width: 320)
+                                Divider()
 
                         Text("Tiempo total: ")
                                         .foregroundStyle(gris4)
                         }
                             .padding(.top, 28)
-                            .padding(.horizontal, 30)
+                            .padding(.horizontal, 45)
 
                         Text("RESUMEN")
                             .font(.system(size: 20))
@@ -142,7 +144,7 @@ struct FinalizarServicioView: View {
                                 Spacer()
                                 ZStack {
                                     RoundedRectangle(cornerRadius: 20)
-                                        .fill(Color(naranja)).opacity(0.7)
+                                        .fill(Color(naranja)).opacity(0.8)
                                     Text("Distancia recorrida: \(distanciaRecorrida.map { $0.formatted() } ?? "") km")
                                         .foregroundColor(.white)
                                         .font(.system(size: 20))
