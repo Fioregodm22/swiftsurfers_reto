@@ -66,6 +66,7 @@ struct CustomTabView: View {
             .clipShape(Capsule())
         }
         .padding(.horizontal)
+        .offset(y: 20)
     }
 }
 
