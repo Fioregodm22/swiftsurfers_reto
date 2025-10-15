@@ -97,7 +97,7 @@ struct IniciarServicioView: View {
                         .frame(width: 350, height: 160)
 
                     VStack(alignment: .leading, spacing: 16) {
-                        Text("KM Inicial:")
+                        Text("KM Inicial*")
                             .padding(.leading, 30)
                             .foregroundStyle(gris4)
 
