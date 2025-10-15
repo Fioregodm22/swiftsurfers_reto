@@ -36,10 +36,11 @@ struct ReCuadro: View {
                 
                 // Paciente
                 HStack {
-                    Image("time-gray")
+                    Image(systemName: "person")
                         .resizable()
                         .aspectRatio(contentMode: .fit)
                         .frame(height: 30)
+                        .foregroundColor(.gray)
                     Text(servicio.paciente)
                         .font(.system(size: 20))
                     Spacer()
@@ -49,10 +50,11 @@ struct ReCuadro: View {
                 
                 // Origen
                 HStack {
-                    Image("time-gray")
+                    Image(systemName: "mappin.and.ellipse")
                         .resizable()
                         .aspectRatio(contentMode: .fit)
                         .frame(height: 30)
+                        .foregroundColor(.gray)
                     VStack(alignment: .leading) {
                         Text("Origen")
                             .font(.system(size: 20)).bold()
@@ -66,10 +68,11 @@ struct ReCuadro: View {
                 
                 // Destino
                 HStack {
-                    Image("time-gray")
+                    Image(systemName: "mappin.and.ellipse")
                         .resizable()
                         .aspectRatio(contentMode: .fit)
                         .frame(height: 30)
+                        .foregroundColor(.gray)
                     VStack(alignment: .leading) {
                         Text("Destino")
                             .font(.system(size: 20)).bold()
