@@ -46,10 +46,8 @@ struct ServicioIniciado: View {
                 .cornerRadius(20)
                 .padding(.top, 300)
                 .navigationDestination(isPresented: $navegarADetalle) {
-                    DetalleView()
+                    ContentView()
                 }
-                
-                
             }
             .ignoresSafeArea(edges: .all)
             .toolbar(.hidden)
