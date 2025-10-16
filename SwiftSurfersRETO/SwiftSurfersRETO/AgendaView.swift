@@ -101,6 +101,7 @@ struct AgendaView: View {
                             }.font(.system(size: 170))
                                 .foregroundStyle(.clear)
                                 
+                                
                             
                             
                         }
@@ -110,6 +111,7 @@ struct AgendaView: View {
                             navigate = true
                         }.font(.system(size: 170))
                             .foregroundStyle(.clear)
+                        
                             
                         
                         

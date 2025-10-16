@@ -130,7 +130,7 @@ struct LoginView: View {
             
         }
         .background(Color(red: 1/255, green: 104/255 ,blue: 138/255))
-        .toolbar(.hidden)
+       
         .navigationBarTitle("")
     }
         
