@@ -39,8 +39,6 @@ struct DetalleView: View {
             IniciarServicioView()
         }
         .padding(.horizontal)
-        .toolbar(.hidden)
-        .navigationBarTitle("Volver")
     }}
     
 
