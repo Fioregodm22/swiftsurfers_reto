@@ -9,15 +9,11 @@ import SwiftUI
 
 @main
 struct SwiftSurfersRETOApp: App {
-    @State private var isLoggedIn: Bool = false
     var body: some Scene {
         WindowGroup {
             NavigationStack {
-                if !isLoggedIn {
-                    AgendaView()
-                }else{
                     LoginView()
-                }
+                
             }
         }
     }

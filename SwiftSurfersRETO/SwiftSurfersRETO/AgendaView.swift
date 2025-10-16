@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct AgendaView: View {
+    @State private var navigate = false
     // -------- FORMATEO DE FECHA --------
     var formattedDate: String {
         let formatter = DateFormatter()
@@ -26,6 +27,7 @@ struct AgendaView: View {
         }
         return date
     }
+    
     
     var body: some View {
         VStack {
@@ -89,15 +91,52 @@ struct AgendaView: View {
             Spacer()
             ScrollView{
                 VStack{
-                    ReCuadro(servicio: .ejemplo)
-                    ReCuadro(servicio: .ejemplo2)
-                    ReCuadro(servicio: .ejemplo)
-                    Spacer()
+                    NavigationLink(destination: DetalleView(), isActive:$navigate){
+                        EmptyView()
+                    }
+                        ZStack{
+                            ReCuadro(servicio: .ejemplo)
+                            Button("hihih"){
+                                navigate = true
+                            }.font(.system(size: 170))
+                                .foregroundStyle(.clear)
+                                
+                                
+                                
+                            
+                            
+                        }
+                    ZStack{
+                        ReCuadro(servicio: .ejemplo2)
+                        Button("hihih"){
+                            navigate = true
+                        }.font(.system(size: 170))
+                            .foregroundStyle(.clear)
+                        
+                            
+                        
+                        
+                    }
+                    ZStack{
+                        ReCuadro(servicio: .ejemplo)
+                        Button("hihih"){
+                            navigate = true
+                        }.font(.system(size: 170))
+                            .foregroundStyle(.clear)
+                            
+                        
+                        
+                    }
+                        
+                        Spacer()
+                    }
                 }
+                
             }
+            .toolbar(.hidden)
         }
     }
-}
+
 
 #Preview {
     AgendaView()
