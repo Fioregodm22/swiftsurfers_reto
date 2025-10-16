@@ -86,7 +86,7 @@ struct LoginView: View {
                     }
                 }
                 
-                NavigationLink(destination: AgendaView(), isActive:$navigate){
+                NavigationLink(destination: ContentView(), isActive:$navigate){
                     EmptyView()
                 }
                 
