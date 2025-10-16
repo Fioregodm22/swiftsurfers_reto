@@ -86,7 +86,7 @@ struct LoginView: View {
                     }
                 }
                 
-                NavigationLink(destination: AgendaView(), isActive:$navigate){
+                NavigationLink(destination: ContentView(), isActive:$navigate){
                     EmptyView()
                 }
                 
@@ -130,7 +130,7 @@ struct LoginView: View {
             
         }
         .background(Color(red: 1/255, green: 104/255 ,blue: 138/255))
-        .toolbar(.hidden)
+       
         .navigationBarTitle("")
     }
         
