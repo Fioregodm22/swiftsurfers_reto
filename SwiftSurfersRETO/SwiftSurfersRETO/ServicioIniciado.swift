@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct ServicioIniciado: View {
+    @State private var navegarADetalle = false
+    
     var body: some View {
         VStack{
             ZStack{
@@ -28,8 +30,12 @@ struct ServicioIniciado: View {
                 Image("check")
                     .padding(.top, -210)
                 
-                Button("ACEPTAR"){
-                    
+                Button(action: {
+                    navegarADetalle = true
+                }){
+                    Text("ACEPTAR")
+                        .font(.system(size: 20))
+                        .bold(true)
                 }
                 .padding()
                 .fontWeight(.bold)
@@ -39,10 +45,14 @@ struct ServicioIniciado: View {
                 .foregroundStyle(Color.white)
                 .cornerRadius(20)
                 .padding(.top, 300)
+                .navigationDestination(isPresented: $navegarADetalle) {
+                    DetalleView()
+                }
                 
                 
             }
             .ignoresSafeArea(edges: .all)
+            .toolbar(.hidden)
             
             
         
@@ -52,5 +62,7 @@ struct ServicioIniciado: View {
 }
 
 #Preview {
-    ServicioIniciado()
+    NavigationStack {
+        ServicioIniciado()
+    }
 }

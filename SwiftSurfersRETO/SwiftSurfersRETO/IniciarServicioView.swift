@@ -8,7 +8,8 @@
 import SwiftUI
 
 struct IniciarServicioView: View {
-    
+    @State private var navegarADetalle = false
+    @State private var navegarAConfirmarInicio = false
     @State public var kmInicial: Int? = nil
     @State public var distanciaRecorrida: Double? = nil
     @State var calendario = Calendar.current
@@ -127,21 +128,28 @@ struct IniciarServicioView: View {
             }
             //BOTONES
             VStack {
-                Button("INICIAR") {
+                //NavigationLink(destination: ServicioIniciado(), isActive: $nave)
+                Button(action: {
                     if (kmInicial == nil) {
                         errorKMInicial.toggle()
                     }
                     else {
                         horaInicio = Date()
-                        // redirigir a ConfirmarInicioView
+                        navegarAConfirmarInicio = true
                     }
+                }) {
+                    Text("INICIAR")
+                        .font(.system(size: 20))
+                        .bold(true)
                 }
-                    .padding(.top, 20)
-                    .padding(.bottom, 20)
-                    .padding(.horizontal, 110)
+                    .frame(width: 300)
+                    .frame(height: 60)
                     .foregroundStyle(.white)
                     .background(RoundedRectangle(cornerRadius: 20).fill(Color(azul)))
                     .bold(true)
+                    .navigationDestination(isPresented: $navegarAConfirmarInicio) {
+                        ServicioIniciado()
+                    }
                     .alert("Error", isPresented: $errorKMInicial) {
                         Button("Aceptar") {}
                     } message : {
@@ -150,23 +158,33 @@ struct IniciarServicioView: View {
                 Spacer()
                     .frame(height:40)
                 
-                Button("CANCELAR") {
-                    // redirigir a DetalleServicioView
+                Button(action: {
+                    navegarADetalle = true
+                })  {
+                        Text("CANCELAR")
+                            .font(.system(size: 20))
+                            .bold(true)
                 }
-                    .padding(.top, 20)
-                    .padding(.bottom, 20)
-                    .padding(.horizontal, 100)
+                    .frame(width: 300)
+                    .frame(height: 60)
                     .foregroundStyle(.white)
                     .background(RoundedRectangle(cornerRadius: 20).fill(Color(gris4)))
                     .bold(true)
+                    .navigationDestination(isPresented: $navegarADetalle) {
+                        DetalleView()
+                    }
             }
             .padding(.top, 60)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .background(gris2.opacity(0.3))
+        .toolbar(.hidden)
     }
 }
+    
 
 #Preview {
-    IniciarServicioView()
+    NavigationStack {
+        IniciarServicioView()
+    }
 }
