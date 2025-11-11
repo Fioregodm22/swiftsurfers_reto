@@ -11,7 +11,10 @@ import SwiftUI
 struct SwiftSurfersRETOApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            NavigationStack {
+                    LoginView()
+                
+            }
         }
     }
 }
