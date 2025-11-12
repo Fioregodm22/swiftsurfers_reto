@@ -90,7 +90,7 @@ struct AgendaView: View {
             
             Spacer()
             ScrollView{
-                VStack{
+                VStack(spacing: 15){
                     NavigationLink(destination: DetalleView(), isActive:$navigate){
                         EmptyView()
                     }
@@ -128,8 +128,8 @@ struct AgendaView: View {
                         
                     }
                         
-                        Spacer()
                     }
+                
                 }
                 
             }

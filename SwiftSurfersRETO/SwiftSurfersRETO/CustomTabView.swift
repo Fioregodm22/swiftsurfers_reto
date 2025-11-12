@@ -31,12 +31,6 @@ struct CustomTabView: View {
                     }label: {
                         ZStack (){
                             Spacer()
-                            
-                            
-                            
-                         
-                            Spacer()
-                            
                             if index + 1 == tabSelection {
                                 Capsule()
                                     .frame(width: 90, height: 50)
@@ -48,9 +42,7 @@ struct CustomTabView: View {
                                     .frame(width: 90, height: 5)
                                     .foregroundColor(.clear)
                                     .offset(y: -5)
-                                
                             }
-                            
                             Image(systemName: tabBarItems[index].image)
                                 .resizable(resizingMode: .stretch)
                                 .aspectRatio(contentMode: .fit)
