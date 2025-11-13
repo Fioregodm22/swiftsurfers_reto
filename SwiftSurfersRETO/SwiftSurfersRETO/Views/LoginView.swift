@@ -16,6 +16,68 @@ struct LoginView: View {
     @State public var warningid : String = ""
     @State public var mostrarContrasena : Bool = false
     
+    
+    // funcion para validar el login
+    func attemptLogin() async {
+        if idworker == nil {
+            alertnotid = true
+            return
+        }
+        let idWorkerValue = idworker ?? 0
+        let idworkerString = String(idWorkerValue)
+        let base = "http://10.14.255.43:10205/validaruser"
+        
+        var components = URLComponents(string: base)!
+        components.queryItems = [
+           
+            URLQueryItem(name: "id_usuario", value: idworkerString),
+            URLQueryItem(name: "contrasena", value: password)
+        ]
+        
+        guard let url = components.url else {
+            
+            print("Error: No se pudo construir la URL.")
+            return
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        
+        
+        do {
+            let (data, response) = try await URLSession.shared.data(for: request)
+            
+           
+            guard let httpResponse = response as? HTTPURLResponse,
+                  (200...299).contains(httpResponse.statusCode) else {
+                print("Error HTTP.")
+                alertnotpass = true
+                return
+            }
+
+
+            let decoder = JSONDecoder()
+            let result = try decoder.decode(LoginResponse.self, from: data)
+            
+
+            if result.valido == true {
+                print("Login exitoso. Usuario valido: \(result.id_usuario)")
+                UserDefaults.standard.set(idworker, forKey: "idworker")
+                navigate = true
+                alertnotid = false
+                alertnotpass = false
+            } else {
+                print("Login fallido. Mensaje: \(result.mensaje)")
+                alertnotpass = true
+            }
+            
+        } catch {
+            print("Error general: \(error.localizedDescription)")
+            alertnotpass = true
+        }
+    }
+
+    
     var body: some View {
     NavigationStack{
         ZStack{
@@ -92,18 +154,10 @@ struct LoginView: View {
                 
                 
                 Button("INGRESAR"){
-                    if(idworker == nil){
-                        alertnotid = true
-                        
-                    }
-                    else if(password != "1234" ){
-                        alertnotpass = true
-                    }
-                    else {
-                        alertnotid = false
-                        alertnotpass = false
-                        navigate = true
-                    }
+                    Task {
+                            await attemptLogin()
+                        }
+                    
                     
                     
                 }
@@ -128,6 +182,9 @@ struct LoginView: View {
             }
             Spacer()
             
+        }
+        .onAppear(){
+            idworker = UserDefaults.standard.integer(forKey: "idworker")
         }
         .background(Color(red: 1/255, green: 104/255 ,blue: 138/255))
        

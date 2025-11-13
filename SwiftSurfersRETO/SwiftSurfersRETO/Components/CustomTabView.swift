@@ -14,7 +14,7 @@ struct CustomTabView: View {
     let tabBarItems: [(image: String, title: String)] = [
         ("timer", "Home"),
         ("calendar","Search"),
-        ("rectangle.portrait.and.arrow.right","Favorites"),
+        ("person.circle.fill","Favorites"),
     ]
     
     var body: some View {
