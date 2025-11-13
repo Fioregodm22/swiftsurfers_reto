@@ -1,27 +1,26 @@
-//
-//  ContentView.swift
-//  ElementosReutilizables
-//
-//  Created by Maria Cavada on 10/10/25.
-//
-
 import SwiftUI
 
 struct ContentView: View {
-    
     @State private var tabSelection = 2
+    @State private var hideTabBar = false
     
     var body: some View {
-        TabView(selection: $tabSelection) {
-            Text("Tab Content 2").tag(1)
+        ZStack(alignment: .bottom) {
+            TabView(selection: $tabSelection) {
+                CalendarioView().tag(1)
+                
+                NavigationStack {
+                    AgendaView(hideTabBar: $hideTabBar)
+                }
+                .tag(2)
+                
+                PerfilView().tag(3)
+            }
             
-            AgendaView().tag(2)
-            
-            Text("Tab Content 3").tag(3)
-
-        }
-        .overlay(alignment: .bottom){
-            CustomTabView(tabSelection: $tabSelection)
+            if !hideTabBar {
+                CustomTabView(tabSelection: $tabSelection)
+                    .transition(.move(edge: .bottom))
+            }
         }
     }
 }
