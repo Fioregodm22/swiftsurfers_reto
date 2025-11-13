@@ -1,15 +1,36 @@
-//
-//  AgendaView.swift
-//  SwiftSurfersRETO
-//
-//  Created by Maria Cavada on 14/10/25.
-//
-
 import SwiftUI
 
 struct AgendaView: View {
-    @State private var navigate = false
-    // -------- FORMATEO DE FECHA --------
+    @Binding var hideTabBar: Bool
+    @State private var servicios: [Servicio] = []
+    @State private var isLoading = false
+    @State private var filtroFecha: String = "hoy"
+    let idPersonal = 5
+    
+    
+    var serviciosFiltrados: [Servicio] {
+        let hoy = Calendar.current.startOfDay(for: Date())
+        let manana = Calendar.current.date(byAdding: .day, value: 1, to: hoy)!
+        
+        return servicios.filter { servicio in
+            
+            let formatter = DateFormatter()
+            formatter.dateFormat = "yyyy-MM-dd"
+            
+            guard let fechaServicio = formatter.date(from: servicio.fecha) else {
+                return false
+            }
+            
+            let fechaServicioSinHora = Calendar.current.startOfDay(for: fechaServicio)
+            
+            if filtroFecha == "hoy" {
+                return fechaServicioSinHora == hoy
+            } else {
+                return fechaServicioSinHora == manana
+            }
+        }
+    }
+    
     var formattedDate: String {
         let formatter = DateFormatter()
         formatter.locale = Locale(identifier: "es_MX")
@@ -28,15 +49,12 @@ struct AgendaView: View {
         return date
     }
     
-    
     var body: some View {
         VStack {
-            // PARTE SUPERIOR
             ZStack(alignment: .topLeading) {
                 Color(red: 1/255, green: 104/255, blue: 138/255)
                     .ignoresSafeArea(edges: .top)
                 
-                // RESUMEN STACK
                 HStack(alignment: .center, spacing: 16) {
                     Image("novaLogo1")
                         .resizable(resizingMode: .stretch)
@@ -55,7 +73,7 @@ struct AgendaView: View {
                         Text(formattedDate)
                             .padding(.leading, 5)
                             .foregroundStyle(Color.white)
-                            .font(.system(size: 18))
+                            .font(.system(size: 16))
                     }
                 }
                 .padding(.top, 5)
@@ -64,80 +82,86 @@ struct AgendaView: View {
             .frame(height: 120)
             .padding(.bottom, 10)
             
+        
             HStack {
-                Button("Hoy") {}
-                    .padding(.vertical, 13)
-                    .padding(.horizontal, 40)
-                    .foregroundStyle(.white)
-                    .background(
-                        RoundedRectangle(cornerRadius: 20)
-                            .fill(Color(red: 255/255, green: 153/255, blue: 0/255))
-                    )
-                    .bold()
-                    .font(.system(size: 20))
+                Button("Hoy") {
+                    filtroFecha = "hoy"
+                }
+                .padding(.vertical, 13)
+                .padding(.horizontal, 40)
+                .foregroundStyle(.white)
+                .background(
+                    RoundedRectangle(cornerRadius: 20)
+                        .fill(filtroFecha == "hoy" ? Color(red: 255/255, green: 153/255, blue: 0/255) : Color.gray)
+                )
+                .bold()
+                .font(.system(size: 20))
                 
-                Button("Mañana") {}
-                    .padding(.vertical, 13)
-                    .padding(.horizontal, 40)
-                    .foregroundStyle(.white)
-                    .background(
-                        RoundedRectangle(cornerRadius: 20)
-                            .fill(Color.gray)
-                    )
-                    .bold()
-                    .font(.system(size: 20))
+                Button("Mañana") {
+                    filtroFecha = "manana"
+                }
+                .padding(.vertical, 13)
+                .padding(.horizontal, 40)
+                .foregroundStyle(.white)
+                .background(
+                    RoundedRectangle(cornerRadius: 20)
+                        .fill(filtroFecha == "manana" ? Color(red: 255/255, green: 153/255, blue: 0/255) : Color.gray)
+                )
+                .bold()
+                .font(.system(size: 20))
             }
+            .padding(.top, -5)
+            .padding(.bottom, -5)
             
             Spacer()
-            ScrollView{
-                VStack(spacing: 15){
-                    NavigationLink(destination: DetalleView(), isActive:$navigate){
-                        EmptyView()
-                    }
-                        ZStack{
-                            ReCuadro(servicio: .ejemplo)
-                            Button("hihih"){
-                                navigate = true
-                            }.font(.system(size: 170))
-                                .foregroundStyle(.clear)
-                                
-                                
-                                
-                            
-                            
+            
+            if isLoading {
+                ProgressView("Cargando servicios...")
+                    .padding()
+                Spacer()
+            } else if serviciosFiltrados.isEmpty {
+                Text("No hay servicios disponibles para \(filtroFecha == "hoy" ? "hoy" : "mañana")")
+                    .foregroundColor(.gray)
+                    .padding()
+                Spacer()
+            } else {
+                ScrollView {
+                    VStack(spacing: 15) {
+                        ForEach(serviciosFiltrados, id: \.idServicio) { servicio in  
+                            NavigationLink(destination: DetalleView(hideTabBar: $hideTabBar, servicio: servicio)) {
+                                ReCuadro(servicio: servicio)
+                            }
                         }
-                    ZStack{
-                        ReCuadro(servicio: .ejemplo2)
-                        Button("hihih"){
-                            navigate = true
-                        }.font(.system(size: 170))
-                            .foregroundStyle(.clear)
-                        
-                            
-                        
-                        
                     }
-                    ZStack{
-                        ReCuadro(servicio: .ejemplo)
-                        Button("hihih"){
-                            navigate = true
-                        }.font(.system(size: 170))
-                            .foregroundStyle(.clear)
-                            
-                        
-                        
-                    }
-                        
-                    }
-                
+                    .buttonStyle(.plain)
+                    .padding(.vertical, 10)
                 }
-                
             }
-            .toolbar(.hidden)
+        }
+        .navigationBarHidden(true)
+        .onAppear {
+            Task {
+                await cargarServicios()
+            }
         }
     }
-
+    
+    func cargarServicios() async {
+        isLoading = true
+        
+        do {
+            let idPersonal = 5
+            servicios = try await obtenerServicios(idPersonal: idPersonal)
+        } catch {
+            print("Error al cargar servicios: \(error.localizedDescription)")
+        }
+        
+        isLoading = false
+    }
+}
 
 #Preview {
-    AgendaView()
+    NavigationStack {
+        AgendaView(hideTabBar: .constant(false))
+    }
 }
