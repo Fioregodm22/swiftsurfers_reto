@@ -12,7 +12,7 @@ struct PerfilView: View {
     @State public var idworker : Int? = nil
     @State public var userData : UserData = usuarioprueba
     @State private var textjornada: String = "Iniciar jornada"
-    @State private var newStatus: String = "No Disponible"
+    @State private var newStatus: String = "Desactivado"
     @State private var errorMessage: String? = nil
     @State private var terminarjornada : Bool = false
     @State public var alertemerg = false
@@ -153,11 +153,11 @@ struct PerfilView: View {
         
         
         if (terminarjornada == false ){
-            newStatus = "Disponible"
+            newStatus = "Activo"
             terminarjornada = true
         }
         else {
-            newStatus = "No Disponible"
+            newStatus = "Desactivado"
             terminarjornada = false
         }
         
