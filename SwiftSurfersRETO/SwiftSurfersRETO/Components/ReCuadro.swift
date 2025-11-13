@@ -1,7 +1,11 @@
 import SwiftUI
 
 struct ReCuadro: View {
-    let servicio: Servicio
+    let servicio: Servicio2
+    
+    var estado: EstadoServicio2 {
+        EstadoServicio2(id: servicio.idEstatus)
+    }
     
     var body: some View {
         HStack {
@@ -9,40 +13,38 @@ struct ReCuadro: View {
             VStack {
                 Spacer()
                 
-                // Hora + icono
                 HStack {
-                    Image(servicio.status.Image)
+                    Image(estado.Image)
                         .resizable()
                         .aspectRatio(contentMode: .fit)
                         .frame(height: 50)
                     
-                    // Muestra solo la hora, p.ej. "2:30 PM"
-                    Text(servicio.hora, style: .time)
+                    Text(servicio.hora)
                         .font(.system(size: 26))
                     
                     Spacer()
                     
-                    // Badge de estado con color dinámico
-                    Text(servicio.status.nombre)
+                    Text(estado.nombre)
                         .font(.caption).bold()
                         .padding(.vertical, 6)
                         .padding(.horizontal, 10)
-                        .background(servicio.status.color.opacity(0.15))
-                        .foregroundStyle(servicio.status.color)
+                        .background(estado.color.opacity(0.15))
+                        .foregroundStyle(estado.color)
                         .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
                 }
     
                 Spacer()
                 
-                // Paciente
                 HStack {
                     Image(systemName: "person")
                         .resizable()
                         .aspectRatio(contentMode: .fit)
                         .frame(height: 30)
                         .foregroundColor(.gray)
-                    Text(servicio.paciente)
+                    
+                    Text("\(servicio.nombreSocio) \(servicio.apellidoPaternoSocio) \(servicio.apellidoMaternoSocio)")
                         .font(.system(size: 20))
+                    
                     Spacer()
                 }
                 
@@ -55,6 +57,7 @@ struct ReCuadro: View {
                         .aspectRatio(contentMode: .fit)
                         .frame(height: 30)
                         .foregroundColor(.gray)
+                    
                     VStack(alignment: .leading) {
                         Text("Origen")
                             .font(.system(size: 20)).bold()
@@ -73,6 +76,7 @@ struct ReCuadro: View {
                         .aspectRatio(contentMode: .fit)
                         .frame(height: 30)
                         .foregroundColor(.gray)
+                    
                     VStack(alignment: .leading) {
                         Text("Destino")
                             .font(.system(size: 20)).bold()
@@ -81,16 +85,16 @@ struct ReCuadro: View {
                     }
                     Spacer()
                 }
+                
                 Spacer()
             }
         }
         .padding(.vertical, 4)
         .padding(.horizontal, 10)
-        .background(Color.gray.opacity(0.08))
+        .background(Color.gray.opacity(0.15))
         .frame(width: 360, height: 230)
         .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
     }
-    
 }
 
 #Preview {

@@ -91,7 +91,7 @@ struct AgendaView: View {
             Spacer()
             ScrollView{
                 VStack(spacing: 15){
-                    NavigationLink(destination: DetalleView(), isActive:$navigate){
+                    NavigationLink(destination: DetalleView(servicio: .ejemplo, detalle: .ejemplo), isActive:$navigate){
                         EmptyView()
                     }
                         ZStack{
