@@ -17,7 +17,7 @@ struct ContentView: View {
             
             AgendaView().tag(2)
             
-            Text("Tab Content 3").tag(3)
+            PerfilView().tag(3)
 
         }
         .overlay(alignment: .bottom){

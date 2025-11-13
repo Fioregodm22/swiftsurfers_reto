@@ -36,7 +36,7 @@ struct EncabezadoView: View {
         }
         .frame(maxWidth: .infinity)
         .frame(height: 120)
-        .padding(.bottom, 40)
+        .padding(.bottom, 10)
     }
 }
 

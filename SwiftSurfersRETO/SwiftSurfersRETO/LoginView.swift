@@ -25,7 +25,7 @@ struct LoginView: View {
         }
         let idWorkerValue = idworker ?? 0
         let idworkerString = String(idWorkerValue)
-        let base = "https://tu-api.com/validaruser"
+        let base = "http://10.14.255.43:10205/validaruser"
         
         var components = URLComponents(string: base)!
         components.queryItems = [
@@ -34,7 +34,11 @@ struct LoginView: View {
             URLQueryItem(name: "contrasena", value: password)
         ]
         
-        guard let url = components.url else { return }
+        guard let url = components.url else {
+            
+            print("Error: No se pudo construir la URL.")
+            return
+        }
         
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
@@ -58,6 +62,7 @@ struct LoginView: View {
 
             if result.valido == true {
                 print("Login exitoso. Usuario valido: \(result.id_usuario)")
+                UserDefaults.standard.set(idworker, forKey: "idworker")
                 navigate = true
                 alertnotid = false
                 alertnotpass = false
@@ -154,6 +159,7 @@ struct LoginView: View {
                         }
                     
                     
+                    
                 }
                 
                 .frame(width: 160, height: 54)
@@ -176,6 +182,9 @@ struct LoginView: View {
             }
             Spacer()
             
+        }
+        .onAppear(){
+            idworker = UserDefaults.standard.integer(forKey: "idworker")
         }
         .background(Color(red: 1/255, green: 104/255 ,blue: 138/255))
        
