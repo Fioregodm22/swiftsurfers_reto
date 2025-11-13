@@ -4,7 +4,32 @@ struct AgendaView: View {
     @Binding var hideTabBar: Bool
     @State private var servicios: [Servicio] = []
     @State private var isLoading = false
+    @State private var filtroFecha: String = "hoy"
     let idPersonal = 5
+    
+    
+    var serviciosFiltrados: [Servicio] {
+        let hoy = Calendar.current.startOfDay(for: Date())
+        let manana = Calendar.current.date(byAdding: .day, value: 1, to: hoy)!
+        
+        return servicios.filter { servicio in
+            
+            let formatter = DateFormatter()
+            formatter.dateFormat = "yyyy-MM-dd"
+            
+            guard let fechaServicio = formatter.date(from: servicio.fecha) else {
+                return false
+            }
+            
+            let fechaServicioSinHora = Calendar.current.startOfDay(for: fechaServicio)
+            
+            if filtroFecha == "hoy" {
+                return fechaServicioSinHora == hoy
+            } else {
+                return fechaServicioSinHora == manana
+            }
+        }
+    }
     
     var formattedDate: String {
         let formatter = DateFormatter()
@@ -57,28 +82,33 @@ struct AgendaView: View {
             .frame(height: 120)
             .padding(.bottom, 10)
             
+        
             HStack {
-                Button("Hoy") {}
-                    .padding(.vertical, 13)
-                    .padding(.horizontal, 40)
-                    .foregroundStyle(.white)
-                    .background(
-                        RoundedRectangle(cornerRadius: 20)
-                            .fill(Color(red: 255/255, green: 153/255, blue: 0/255))
-                    )
-                    .bold()
-                    .font(.system(size: 20))
+                Button("Hoy") {
+                    filtroFecha = "hoy"
+                }
+                .padding(.vertical, 13)
+                .padding(.horizontal, 40)
+                .foregroundStyle(.white)
+                .background(
+                    RoundedRectangle(cornerRadius: 20)
+                        .fill(filtroFecha == "hoy" ? Color(red: 255/255, green: 153/255, blue: 0/255) : Color.gray)
+                )
+                .bold()
+                .font(.system(size: 20))
                 
-                Button("Mañana") {}
-                    .padding(.vertical, 13)
-                    .padding(.horizontal, 40)
-                    .foregroundStyle(.white)
-                    .background(
-                        RoundedRectangle(cornerRadius: 20)
-                            .fill(Color.gray)
-                    )
-                    .bold()
-                    .font(.system(size: 20))
+                Button("Mañana") {
+                    filtroFecha = "manana"
+                }
+                .padding(.vertical, 13)
+                .padding(.horizontal, 40)
+                .foregroundStyle(.white)
+                .background(
+                    RoundedRectangle(cornerRadius: 20)
+                        .fill(filtroFecha == "manana" ? Color(red: 255/255, green: 153/255, blue: 0/255) : Color.gray)
+                )
+                .bold()
+                .font(.system(size: 20))
             }
             .padding(.top, -5)
             .padding(.bottom, -5)
@@ -89,15 +119,15 @@ struct AgendaView: View {
                 ProgressView("Cargando servicios...")
                     .padding()
                 Spacer()
-            } else if servicios.isEmpty {
-                Text("No hay servicios disponibles")
+            } else if serviciosFiltrados.isEmpty {
+                Text("No hay servicios disponibles para \(filtroFecha == "hoy" ? "hoy" : "mañana")")
                     .foregroundColor(.gray)
                     .padding()
                 Spacer()
             } else {
                 ScrollView {
                     VStack(spacing: 15) {
-                        ForEach(servicios, id: \.idServicio) { servicio in
+                        ForEach(serviciosFiltrados, id: \.idServicio) { servicio in  
                             NavigationLink(destination: DetalleView(hideTabBar: $hideTabBar, servicio: servicio)) {
                                 ReCuadro(servicio: servicio)
                             }
@@ -121,7 +151,6 @@ struct AgendaView: View {
         
         do {
             let idPersonal = 5
-            //UserDefaults.standard.integer(forKey: "idPersonal")
             servicios = try await obtenerServicios(idPersonal: idPersonal)
         } catch {
             print("Error al cargar servicios: \(error.localizedDescription)")

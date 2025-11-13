@@ -120,7 +120,7 @@ struct DetalleView: View {
                         .padding(.leading, 20)
                     
                     VStack (alignment: .leading, spacing: 8) {
-                        Text("Iniciar Servicio")
+                        Text("Detalle Servicio")
                             .padding(.top, 15)
                             .padding(.leading, 5)
                             .foregroundStyle(Color.white)
@@ -133,6 +133,7 @@ struct DetalleView: View {
                     }
                 }
                 .padding(.top, 40)
+                .padding(.bottom, 10)
             }
             .frame(maxWidth: .infinity)
             .frame(height: 120)
