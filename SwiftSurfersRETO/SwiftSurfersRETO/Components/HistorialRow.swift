@@ -10,6 +10,9 @@ import SwiftUI
 struct HistorialRow: View {
     let servicio: ServicioHistorial
     
+    var estado: EstadoServicio {
+        EstadoServicio(id: servicio.idEstatus)
+    }
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             
@@ -29,13 +32,12 @@ struct HistorialRow: View {
                 
                 Spacer()
                 
-                Text(servicio.estatusDescripcion!)
+                Text(estado.nombre)
                     .font(.caption.weight(.semibold))
                     .padding(.vertical, 6)
                     .padding(.horizontal, 10)
-                // HARDCODED
-                    .background(Color.orange.opacity(0.15))
-                    .foregroundStyle(Color.orange)
+                    .background(estado.color.opacity(0.15))
+                    .foregroundStyle(estado.color)
                     .clipShape(Capsule())
             }
             
