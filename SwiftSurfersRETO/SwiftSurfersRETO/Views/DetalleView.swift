@@ -11,26 +11,24 @@ struct DetalleView: View {
     @Environment(\.dismiss) var dismiss
     @Binding var hideTabBar: Bool
     @State private var navegarAIniciar = false
-    @State private var detalle: Detalle?
     @State private var isLoading = true
-
+    @State var marcadorList: [Marcador] = []
     
+    @State private var detalle: Detalle?
+    let servicio: Servicio
+    var estado: EstadoServicio {
+        EstadoServicio(id: servicio.idEstatus)
+    }
+
     let naranja = Color(red: 255/255.0, green: 153/255.0, blue: 0/255.0)
     let azul = Color(red: 1/255.0, green: 104/255.0, blue: 138/255.0)
     
-    let servicio: Servicio2
-    
-    var estado: EstadoServicio2 {
-        EstadoServicio2(id: servicio.idEstatus)
-    }
-    
-    @State var marcadorList: [Marcador] = []
     
     var body: some View {
         Group {
             if isLoading {
                 VStack {
-                    ProgressView("Cargando detalles...")
+                    ProgressView("Cargando detalles")
                         .padding()
                     Spacer()
                 }
@@ -64,7 +62,6 @@ struct DetalleView: View {
             let detalleObtenido = try await obtenerDetalle(idServicio: servicio.idServicio)
             self.detalle = detalleObtenido
             
-            // Actualizar marcadores con las coordenadas reales
             marcadorList = [
                 Marcador(
                     nombre: servicio.destino,
@@ -91,14 +88,13 @@ struct DetalleView: View {
     }
     
     
-    @ViewBuilder
     func contenidoDetalle(detalle: Detalle) -> some View {
         VStack(spacing: 15){
             ZStack(alignment: .topLeading){
                 Color(azul)
                     .ignoresSafeArea(edges: .top)
                 
-                HStack {
+                VStack {
                         Button(action: {
                             dismiss()
                         }) {

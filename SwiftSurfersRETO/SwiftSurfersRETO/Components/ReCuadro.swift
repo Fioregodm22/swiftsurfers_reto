@@ -1,10 +1,10 @@
 import SwiftUI
 
 struct ReCuadro: View {
-    let servicio: Servicio2
+    let servicio: Servicio
     
-    var estado: EstadoServicio2 {
-        EstadoServicio2(id: servicio.idEstatus)
+    var estado: EstadoServicio {
+        EstadoServicio(id: servicio.idEstatus)
     }
     
     var body: some View {

@@ -2,11 +2,9 @@ import SwiftUI
 
 struct AgendaView: View {
     @Binding var hideTabBar: Bool
-    @State private var navigate = false
-    @State private var servicios: [Servicio2] = []
+    @State private var servicios: [Servicio] = []
     @State private var isLoading = false
-    @State private var selectedServicio: Servicio2?
-    let idPersonal = 4
+    let idPersonal = 5
     
     var formattedDate: String {
         let formatter = DateFormatter()
@@ -28,12 +26,10 @@ struct AgendaView: View {
     
     var body: some View {
         VStack {
-            // PARTE SUPERIOR
             ZStack(alignment: .topLeading) {
                 Color(red: 1/255, green: 104/255, blue: 138/255)
                     .ignoresSafeArea(edges: .top)
                 
-                // RESUMEN STACK
                 HStack(alignment: .center, spacing: 16) {
                     Image("novaLogo1")
                         .resizable(resizingMode: .stretch)
@@ -124,7 +120,6 @@ struct AgendaView: View {
         isLoading = true
         
         do {
-            // Obtener el idPersonal de UserDefaults (guardado en el login)
             let idPersonal = 5
             //UserDefaults.standard.integer(forKey: "idPersonal")
             servicios = try await obtenerServicios(idPersonal: idPersonal)

@@ -10,7 +10,7 @@ import SwiftUI
 
 
 
-struct EstadoServicio2 {
+struct EstadoServicio {
     let nombre: String
     let color: Color
     let Image: String
@@ -61,7 +61,7 @@ struct Detalle: Codable {
 }
 
 
-struct Servicio2: Codable {
+struct Servicio: Codable {
     var apellidoMaternoSocio: String
     var apellidoPaternoSocio: String
     var destino: String
@@ -77,8 +77,8 @@ struct Servicio2: Codable {
 }
 
 
-extension Servicio2 {
-    static let ejemplo = Servicio2(
+extension Servicio {
+    static let ejemplo = Servicio(
         apellidoMaternoSocio: "López",
         apellidoPaternoSocio: "García",
         destino: "Clínica del Norte",
@@ -94,8 +94,8 @@ extension Servicio2 {
     )
 }
 
-extension Servicio2 {
-    static let ejemplo2 = Servicio2(
+extension Servicio {
+    static let ejemplo2 = Servicio(
         apellidoMaternoSocio: "Ruiz",
         apellidoPaternoSocio: "Fernández",
         destino: "Hospital Ángeles",

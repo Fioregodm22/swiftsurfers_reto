@@ -2,7 +2,7 @@ import SwiftUI
 
 struct ContentView: View {
     @State private var tabSelection = 2
-    @State private var hideTabBar = false  // CAMBIA ESTO - ya no es @Binding
+    @State private var hideTabBar = false
     
     var body: some View {
         ZStack(alignment: .bottom) {
@@ -26,5 +26,5 @@ struct ContentView: View {
 }
 
 #Preview {
-    ContentView()  // Ahora ya no necesita parámetros
+    ContentView()
 }
