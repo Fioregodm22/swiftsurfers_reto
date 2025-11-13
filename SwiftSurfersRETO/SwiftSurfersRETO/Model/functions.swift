@@ -41,4 +41,38 @@ func obtenerServicios(idPersonal: Int) async throws -> [Servicio2] {
     return servicios
 }
 
-
+func obtenerDetalle(idServicio: Int) async throws -> Detalle {
+    let base = "http://10.14.255.43:10201/detalle"
+    
+    var components = URLComponents(string: base)!
+    components.queryItems = [
+        URLQueryItem(name: "idServicio", value: String(idServicio))
+    ]
+    
+    guard let url = components.url else {
+        print("Error: No se pudo construir la URL.")
+        throw URLError(.badURL)
+    }
+    
+    var request = URLRequest(url: url)
+    request.httpMethod = "GET"
+    
+    let (data, response) = try await URLSession.shared.data(for: request)
+    
+    guard let httpResponse = response as? HTTPURLResponse,
+          (200...299).contains(httpResponse.statusCode) else {
+        print("Error HTTP.")
+        throw URLError(.badServerResponse)
+    }
+    
+    let decoder = JSONDecoder()
+    let detalles = try decoder.decode([Detalle].self, from: data)
+    
+    guard let primerDetalle = detalles.first else {
+        print("Array de detalles vacío")
+        throw URLError(.cannotDecodeContentData)
+    }
+    
+    print("Detalle obtenido exitosamente para servicio: \(idServicio)")
+    return primerDetalle
+}

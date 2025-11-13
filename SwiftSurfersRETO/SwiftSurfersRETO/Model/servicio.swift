@@ -41,23 +41,22 @@ struct EstadoServicio2 {
 
 }
 
-
-struct Detalle {
-    var horaFinal: String
+struct Detalle: Codable {
+    var horaFinal: String?
     var horaInicio: String
     var idAmbulancia: Int
     var idDetalle: Int
     var idMedico: Int
     var idMedicoSeguro: String
     var idServicio: Int
-    var kmFinal: Int
+    var kmFinal: Int?
     var kmInicio: Int
-    var kmTotales: Int
+    var kmTotales: Int?
     var latitudDestino: Double
     var latitudOrigen: Double
     var longitudDestino: Double
     var longitudOrigen: Double
-    var tiempoTotal: Int
+    var tiempoTotal: Int?
     var tipoAmbulancia: String
 }
 

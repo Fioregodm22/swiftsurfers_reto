@@ -8,49 +8,106 @@
 import SwiftUI
 
 struct DetalleView: View {
+    @Environment(\.dismiss) var dismiss
     @State private var navegarAIniciar = false
+    @State private var detalle: Detalle?
+    @State private var isLoading = true
+    
     let naranja = Color(red: 255/255.0, green: 153/255.0, blue: 0/255.0)
     let azul = Color(red: 1/255.0, green: 104/255.0, blue: 138/255.0)
     
     let servicio: Servicio2
-    let detalle : Detalle
-
+    
     var estado: EstadoServicio2 {
         EstadoServicio2(id: servicio.idEstatus)
     }
     
-    @State var marcadorList: [Marcador]
+    @State var marcadorList: [Marcador] = []
+    
+    var body: some View {
+        Group {
+            if isLoading {
+                VStack {
+                    ProgressView("Cargando detalles...")
+                        .padding()
+                    Spacer()
+                }
+            } else if let detalle = detalle {
+                contenidoDetalle(detalle: detalle)
+            } else {
+                VStack {
+                    Text("Error al cargar los detalles")
+                        .foregroundColor(.red)
+                    Spacer()
+                }
+            }
+        }
+        .navigationBarHidden(true)
+        .onAppear {
+            Task {
+                await cargarDetalle()
+            }
+        }
+    }
+    
+    func cargarDetalle() async {
+        isLoading = true
         
-        init(servicio: Servicio2, detalle: Detalle) {
-            self.servicio = servicio
-            self.detalle = detalle
+        do {
+            let detalleObtenido = try await obtenerDetalle(idServicio: servicio.idServicio)
+            self.detalle = detalleObtenido
             
-            _marcadorList = State(initialValue: [
+            // Actualizar marcadores con las coordenadas reales
+            marcadorList = [
                 Marcador(
                     nombre: servicio.destino,
                     coordinate: .init(
-                        latitude: detalle.latitudDestino,
-                        longitude: detalle.longitudDestino
+                        latitude: detalleObtenido.latitudDestino,
+                        longitude: detalleObtenido.longitudDestino
                     ),
                     colorMark: azul
                 ),
                 Marcador(
                     nombre: servicio.origen,
                     coordinate: .init(
-                        latitude: detalle.latitudOrigen,
-                        longitude: detalle.longitudOrigen
+                        latitude: detalleObtenido.latitudOrigen,
+                        longitude: detalleObtenido.longitudOrigen
                     ),
                     colorMark: naranja
                 )
-            ])
+            ]
+        } catch {
+            print("Error al cargar detalle: \(error.localizedDescription)")
         }
+        
+        isLoading = false
+    }
     
-    var body: some View {
+    
+    @ViewBuilder
+    func contenidoDetalle(detalle: Detalle) -> some View {
         VStack(spacing: 15){
             ZStack(alignment: .topLeading){
                 Color(azul)
                     .ignoresSafeArea(edges: .top)
-                //RESUMEN STACK
+                
+                HStack {
+                        Button(action: {
+                            dismiss()
+                        }) {
+                            HStack(spacing: 8) {
+                                Image(systemName: "chevron.left")
+                                    .font(.system(size: 18, weight: .semibold))
+                                Text("Atrás")
+                                    .font(.system(size: 18))
+                            }
+                            .foregroundColor(.white)
+                            .padding(.leading, 20)
+                            .padding(.top, 15)
+                        }
+                        Spacer()
+                    }
+                
                 HStack (alignment: .center, spacing: 16) {
                     Image("novaLogo1")
                         .resizable(resizingMode: .stretch)
@@ -65,18 +122,16 @@ struct DetalleView: View {
                             .foregroundStyle(Color.white)
                             .bold()
                             .font(.system(size: 25))
-                        Text ("# ID: 001")
+                        Text ("# ID: \(servicio.idServicio)")
                             .padding(.leading, 5)
                             .foregroundStyle(Color.white)
                             .font(.system(size: 20))
                     }
                 }
-                .padding(.top, 5)
+                .padding(.top, 30)
             }
             .frame(maxWidth: .infinity)
             .frame(height: 120)
-
-        
             
             VStack {
                 HStack{
@@ -91,13 +146,13 @@ struct DetalleView: View {
                         .foregroundStyle(estado.color)
                         .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
                 }
-            MapaView(latitud: 25.67507, longitud: -100.31847, customMark: marcadorList, showPosicion: true)
+                
+                MapaView(latitud: 25.67507, longitud: -100.31847, customMark: marcadorList, showPosicion: true)
                     .frame(height: 200)
                     .clipped()
                     .onTapGesture {
                         abrirGoogleMaps(latitud: detalle.latitudDestino, longitud: detalle.longitudDestino)
                     }
-                
             }
             .padding(10)
             .background(Color.gray.opacity(0.15))
@@ -111,12 +166,11 @@ struct DetalleView: View {
                         .aspectRatio(contentMode: .fit)
                         .frame(height: 30)
                     
-
                     Text(servicio.hora)
                         .font(.system(size: 22))
                     Spacer()
-                    
                 }
+                
                 HStack{
                     Text("Tipo de Traslado")
                         .font(.system(size: 18).bold())
@@ -125,15 +179,15 @@ struct DetalleView: View {
                         .font(.system(size: 18))
                 }
                 .padding(3)
+                
                 HStack{
-                    Text("Tipo de Ambulanica")
+                    Text("Tipo de Ambulancia")
                         .font(.system(size: 18).bold())
                     Spacer()
                     Text(detalle.tipoAmbulancia)
                         .font(.system(size: 18))
                 }
                 .padding(3)
-                
             }
             .padding(15)
             .background(Color.gray.opacity(0.15))
@@ -148,12 +202,11 @@ struct DetalleView: View {
                         .frame(height: 30)
                         .foregroundColor(.gray)
                     
-
                     Text("\(servicio.nombreSocio) \(servicio.apellidoPaternoSocio) \(servicio.apellidoMaternoSocio)")
                         .font(.system(size: 20))
                     Spacer()
-                    
                 }
+                
                 HStack {
                     Text("Numero de Socio")
                         .font(.system(size: 18).bold())
@@ -162,6 +215,7 @@ struct DetalleView: View {
                         .font(.system(size: 18))
                 }
                 .padding(3)
+                
                 HStack{
                     Text("ID Medico")
                         .font(.system(size: 18).bold())
@@ -170,7 +224,6 @@ struct DetalleView: View {
                         .font(.system(size: 18))
                 }
                 .padding(3)
-                
             }
             .padding(15)
             .background(Color.gray.opacity(0.15))
@@ -178,37 +231,35 @@ struct DetalleView: View {
             .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
             
             Button(action: {
-                        navegarAIniciar = true
-                    }) {
-                        HStack(spacing: 12) {
-                            Image(systemName: "checkmark.circle.fill")
-                                .font(.system(size: 20))
-                            
-                            Text("Iniciar Servicio")
-                                .font(.system(size: 20))
-                                .bold(true)
-                        }
-                        .frame(width: 360)
-                        .frame(height: 60)
-                        .foregroundColor(.white)
-                        .background(
-                            RoundedRectangle(cornerRadius: 20)
-                                .fill(naranja)
-                        )
-                    }
-                    .navigationDestination(isPresented: $navegarAIniciar) {
-                        IniciarServicioView()
-                    }
+                navegarAIniciar = true
+            }) {
+                HStack(spacing: 12) {
+                    Image(systemName: "checkmark.circle.fill")
+                        .font(.system(size: 20))
+                    
+                    Text("Iniciar Servicio")
+                        .font(.system(size: 20))
+                        .bold(true)
+                }
+                .frame(width: 360)
+                .frame(height: 60)
+                .foregroundColor(.white)
+                .background(
+                    RoundedRectangle(cornerRadius: 20)
+                        .fill(naranja)
+                )
+            }
+            .navigationDestination(isPresented: $navegarAIniciar) {
+                IniciarServicioView()
+            }
             
             Spacer()
         }
-        .navigationBarHidden(true)
     }
 }
-    
 
 #Preview {
     NavigationStack {
-        DetalleView(servicio: .ejemplo, detalle: .ejemplo)
+        DetalleView(servicio: .ejemplo)
     }
 }

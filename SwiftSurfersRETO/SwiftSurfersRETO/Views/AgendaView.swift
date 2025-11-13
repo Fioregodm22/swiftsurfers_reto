@@ -7,7 +7,6 @@ struct AgendaView: View {
     @State private var selectedServicio: Servicio2?
     let idPersonal = 4
     
-    // -------- FORMATEO DE FECHA --------
     var formattedDate: String {
         let formatter = DateFormatter()
         formatter.locale = Locale(identifier: "es_MX")
@@ -52,7 +51,7 @@ struct AgendaView: View {
                         Text(formattedDate)
                             .padding(.leading, 5)
                             .foregroundStyle(Color.white)
-                            .font(.system(size: 18))
+                            .font(.system(size: 16))
                     }
                 }
                 .padding(.top, 5)
@@ -84,6 +83,8 @@ struct AgendaView: View {
                     .bold()
                     .font(.system(size: 20))
             }
+            .padding(.top, -5)
+            .padding(.bottom, -5)
             
             Spacer()
             
@@ -100,7 +101,7 @@ struct AgendaView: View {
                 ScrollView {
                     VStack(spacing: 15) {
                         ForEach(servicios, id: \.idServicio) { servicio in
-                            NavigationLink(destination: DetalleView(servicio: servicio, detalle: .ejemplo)) {
+                            NavigationLink(destination: DetalleView(servicio: servicio)) {
                                 ReCuadro(servicio: servicio)
                             }
                         }
