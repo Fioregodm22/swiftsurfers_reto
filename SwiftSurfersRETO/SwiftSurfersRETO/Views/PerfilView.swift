@@ -22,7 +22,7 @@ struct PerfilView: View {
         }
         let idWorkerValue = idworker ?? 0
         let idworkerString = String(idWorkerValue)
-        let base = "http://10.14.255.43:10205/getuser"
+        let base = "http://toll-open-undertake-climb.trycloudflare.com/getuser"
         
         var components = URLComponents(string: base)!
         components.queryItems = [
@@ -83,7 +83,7 @@ struct PerfilView: View {
         }
         
         
-        let url = URL(string: "http://10.14.255.43:10205/updatestatus")!
+        let url = URL(string: "http://toll-open-undertake-climb.trycloudflare.com/updatestatus")!
         var request = URLRequest(url: url)
         request.httpMethod = "PUT"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
