@@ -49,7 +49,7 @@ struct DetalleView: View {
         VStack(spacing: 15){
             ZStack(alignment: .topLeading){
                 Color(azul)
-                    //.ignoresSafeArea(edges: .top)
+                    .ignoresSafeArea(edges: .top)
                 //RESUMEN STACK
                 HStack (alignment: .center, spacing: 16) {
                     Image("novaLogo1")
@@ -93,6 +93,10 @@ struct DetalleView: View {
                 }
             MapaView(latitud: 25.67507, longitud: -100.31847, customMark: marcadorList, showPosicion: true)
                     .frame(height: 200)
+                    .clipped()
+                    .onTapGesture {
+                        abrirGoogleMaps(latitud: detalle.latitudDestino, longitud: detalle.longitudDestino)
+                    }
                 
             }
             .padding(10)
@@ -184,7 +188,7 @@ struct DetalleView: View {
                                 .font(.system(size: 20))
                                 .bold(true)
                         }
-                        .frame(width: 300)
+                        .frame(width: 360)
                         .frame(height: 60)
                         .foregroundColor(.white)
                         .background(
@@ -198,7 +202,7 @@ struct DetalleView: View {
             
             Spacer()
         }
-        .padding(.top, -100)
+        .navigationBarHidden(true)
     }
 }
     

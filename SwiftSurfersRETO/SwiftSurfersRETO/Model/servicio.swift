@@ -62,7 +62,7 @@ struct Detalle {
 }
 
 
-struct Servicio2 {
+struct Servicio2: Codable {
     var apellidoMaternoSocio: String
     var apellidoPaternoSocio: String
     var destino: String

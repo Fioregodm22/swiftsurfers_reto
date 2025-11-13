@@ -1,14 +1,12 @@
-//
-//  AgendaView.swift
-//  SwiftSurfersRETO
-//
-//  Created by Maria Cavada on 14/10/25.
-//
-
 import SwiftUI
 
 struct AgendaView: View {
     @State private var navigate = false
+    @State private var servicios: [Servicio2] = []
+    @State private var isLoading = false
+    @State private var selectedServicio: Servicio2?
+    let idPersonal = 4
+    
     // -------- FORMATEO DE FECHA --------
     var formattedDate: String {
         let formatter = DateFormatter()
@@ -27,7 +25,6 @@ struct AgendaView: View {
         }
         return date
     }
-    
     
     var body: some View {
         VStack {
@@ -89,55 +86,56 @@ struct AgendaView: View {
             }
             
             Spacer()
-            ScrollView{
-                VStack(spacing: 15){
-                    NavigationLink(destination: DetalleView(servicio: .ejemplo, detalle: .ejemplo), isActive:$navigate){
-                        EmptyView()
-                    }
-                        ZStack{
-                            ReCuadro(servicio: .ejemplo)
-                            Button("hihih"){
-                                navigate = true
-                            }.font(.system(size: 170))
-                                .foregroundStyle(.clear)
-                                
-                                
-                                
-                            
-                            
+            
+            if isLoading {
+                ProgressView("Cargando servicios...")
+                    .padding()
+                Spacer()
+            } else if servicios.isEmpty {
+                Text("No hay servicios disponibles")
+                    .foregroundColor(.gray)
+                    .padding()
+                Spacer()
+            } else {
+                ScrollView {
+                    VStack(spacing: 15) {
+                        ForEach(servicios, id: \.idServicio) { servicio in
+                            NavigationLink(destination: DetalleView(servicio: servicio, detalle: .ejemplo)) {
+                                ReCuadro(servicio: servicio)
+                            }
                         }
-                    ZStack{
-                        ReCuadro(servicio: .ejemplo2)
-                        Button("hihih"){
-                            navigate = true
-                        }.font(.system(size: 170))
-                            .foregroundStyle(.clear)
-                        
-                            
-                        
-                        
                     }
-                    ZStack{
-                        ReCuadro(servicio: .ejemplo)
-                        Button("hihih"){
-                            navigate = true
-                        }.font(.system(size: 170))
-                            .foregroundStyle(.clear)
-                            
-                        
-                        
-                    }
-                        
-                    }
-                
+                    .buttonStyle(.plain)
+                    .padding(.vertical, 10)
                 }
-                
             }
-            .toolbar(.hidden)
+        }
+        .navigationBarHidden(true)
+        .onAppear {
+            Task {
+                await cargarServicios()
+            }
         }
     }
-
+    
+    func cargarServicios() async {
+        isLoading = true
+        
+        do {
+            // Obtener el idPersonal de UserDefaults (guardado en el login)
+            let idPersonal = 5
+            //UserDefaults.standard.integer(forKey: "idPersonal")
+            servicios = try await obtenerServicios(idPersonal: idPersonal)
+        } catch {
+            print("Error al cargar servicios: \(error.localizedDescription)")
+        }
+        
+        isLoading = false
+    }
+}
 
 #Preview {
-    AgendaView()
+    NavigationStack {
+        AgendaView()
+    }
 }
