@@ -84,13 +84,11 @@ struct ReCuadro: View {
                 Spacer()
             }
         }
-        .padding(.vertical)
+        .padding(.vertical, 4)
         .padding(.horizontal, 10)
         .background(Color.gray.opacity(0.08))
-        .frame(width: 340, height: 230)
+        .frame(width: 360, height: 230)
         .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
-        .padding(.top, 10)
-        .padding(.bottom, 10)
     }
     
 }

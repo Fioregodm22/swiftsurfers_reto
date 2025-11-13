@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct IniciarServicioView: View {
+    @Environment(\.dismiss) var dismiss
     @State private var navegarADetalle = false
     @State private var navegarAConfirmarInicio = false
     @State public var kmInicial: Int? = nil
@@ -159,7 +160,7 @@ struct IniciarServicioView: View {
                     .frame(height:40)
                 
                 Button(action: {
-                    navegarADetalle = true
+                    dismiss()
                 })  {
                         Text("CANCELAR")
                             .font(.system(size: 20))
@@ -170,9 +171,10 @@ struct IniciarServicioView: View {
                     .foregroundStyle(.white)
                     .background(RoundedRectangle(cornerRadius: 20).fill(Color(gris4)))
                     .bold(true)
-                    .navigationDestination(isPresented: $navegarADetalle) {
-                        DetalleView()
-                    }
+                    //.navigationDestination(isPresented: $navegarADetalle) {
+                     //   dismiss()
+
+                    
             }
             .padding(.top, 60)
         }

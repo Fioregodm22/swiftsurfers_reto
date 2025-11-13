@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct DetalleView: View {
-    @State private var tabSelection = 0
+    @State private var tabSelection = 2
     @State private var navegarAIniciar = false
     let naranja = Color(red: 255/255.0, green: 153/255.0, blue: 0/255.0)
     
@@ -40,7 +40,8 @@ struct DetalleView: View {
             IniciarServicioView()
         }
         .padding(.horizontal)
-    }}
+}
+}
     
 
 #Preview {
