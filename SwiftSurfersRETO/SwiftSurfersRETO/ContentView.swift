@@ -15,7 +15,7 @@ struct ContentView: View {
         NavigationStack{
             
             TabView(selection: $tabSelection) {
-                Text("Tab Content 2").tag(1)
+                CalendarioView().tag(1)
                 
                 AgendaView().tag(2)
                 
