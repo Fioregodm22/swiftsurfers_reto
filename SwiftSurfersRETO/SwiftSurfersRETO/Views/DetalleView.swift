@@ -103,10 +103,11 @@ struct DetalleView: View {
                             }
                             .foregroundColor(.white)
                             .padding(.leading, 20)
-                            .padding(.top, 15)
+                            .padding(.top, 30)
                         }
                         Spacer()
                     }
+    
                 
                 HStack (alignment: .center, spacing: 16) {
                     Image("novaLogo1")
@@ -128,7 +129,7 @@ struct DetalleView: View {
                             .font(.system(size: 20))
                     }
                 }
-                .padding(.top, 30)
+                .padding(.top, 40)
             }
             .frame(maxWidth: .infinity)
             .frame(height: 120)
