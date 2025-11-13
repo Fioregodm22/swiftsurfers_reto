@@ -74,7 +74,7 @@ struct PerfilView: View {
     }
     
     func updateUserStatus(newStatus: String) async {
-        // Asegúrate de que idworker es de tipo Int?
+        
         guard let id = idworker else {
             DispatchQueue.main.async {
                 self.errorMessage = "ID de trabajador no disponible."
@@ -107,7 +107,7 @@ struct PerfilView: View {
         do {
             let (data, response) = try await URLSession.shared.data(for: request)
             
-            // 1. Comprobación del código de estado HTTP
+            // estado hhtp
             guard let httpResponse = response as? HTTPURLResponse,
                   (200...299).contains(httpResponse.statusCode) else {
                 let status = (response as? HTTPURLResponse)?.statusCode ?? 0
@@ -117,21 +117,21 @@ struct PerfilView: View {
                 return
             }
             
-            // 2. Decodificación, asumiendo que un 200-299 es suficiente para el éxito.
+            // respuesta
             let decodedResponse = try JSONDecoder().decode(StatusUpdateResponse.self, from: data)
             
-            // 3. Comprobación de éxito del API (manteniendo la lógica de éxito del servidor)
+            // comprobacion de exito
             guard decodedResponse.success else {
                 DispatchQueue.main.async {
-                    self.errorMessage = decodedResponse.message // Mensaje de error del API
+                    self.errorMessage = decodedResponse.message
                 }
                 return
             }
             
             DispatchQueue.main.async {
-                self.errorMessage = nil // Limpiar errores si tuvo éxito
+                self.errorMessage = nil // limpiar errores si tuvo éxito
                 
-                // 4. Actualiza la data local con el estatus confirmado por el API
+                // actualizar estatus
                 self.userData = UserData(
                     idPersonal: decodedResponse.id_usuario,
                     nombre: self.userData.nombre,
@@ -139,7 +139,7 @@ struct PerfilView: View {
                     codigoUsuario: self.userData.codigoUsuario,
                     correoElectronico: self.userData.correoElectronico,
                     telefono: self.userData.telefono,
-                    estatus: decodedResponse.nuevo_status // Estatus confirmado por el API
+                    estatus: decodedResponse.nuevo_status //nuevo estatus
                 )
             }
         } catch {
