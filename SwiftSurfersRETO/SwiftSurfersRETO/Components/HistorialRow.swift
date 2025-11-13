@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct HistorialRow: View {
-    let servicio: Servicio
+    let servicio: ServicioHistorial
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -23,18 +23,19 @@ struct HistorialRow: View {
                 VStack(alignment: .leading) {
                     Text("Fecha")
                         .font(.system(size: 18)).bold()
-                    Text("30/10/2025")
+                    Text(servicio.fecha)
                         .font(.system(size: 16))
                 }
                 
                 Spacer()
                 
-                Text(servicio.status.nombre)
+                Text(servicio.estatusDescripcion!)
                     .font(.caption.weight(.semibold))
                     .padding(.vertical, 6)
                     .padding(.horizontal, 10)
-                    .background(servicio.status.color.opacity(0.15))
-                    .foregroundStyle(servicio.status.color)
+                // HARDCODED
+                    .background(Color.orange.opacity(0.15))
+                    .foregroundStyle(Color.orange)
                     .clipShape(Capsule())
             }
             
@@ -48,7 +49,7 @@ struct HistorialRow: View {
                 VStack(alignment: .leading) {
                     Text("Tipo de Viaje")
                         .font(.system(size: 18)).bold()
-                    Text("Redondo")
+                    Text(servicio.tipoServicio!)
                         .font(.system(size: 16))
                 }
                 Spacer()
@@ -64,7 +65,7 @@ struct HistorialRow: View {
                 VStack(alignment: .leading) {
                     Text("ID Paciente")
                         .font(.system(size: 18)).bold()
-                    Text("1234")
+                    Text(String(servicio.idNumeroSocio))
                         .font(.system(size: 16))
                 }
                 Spacer()
@@ -77,5 +78,19 @@ struct HistorialRow: View {
 }
 
 #Preview {
-    HistorialRow(servicio: .ejemplo)
+    HistorialRow(servicio: ServicioHistorial(
+        idServicio: 101,
+        idNumeroSocio: 202345,
+        fecha: "2025-11-13",
+        hora: "14:30",
+        origen: "Av. Reforma 123, Ciudad de México",
+        destino: "Aeropuerto Internacional CDMX",
+        tipoServicio: "Traslado Ejecutivo",
+        nombreAsociado: "Carlos Ramírez",
+        estatusDescripcion: "Completado",
+        estatusColor: "#4CAF50",
+        tiempoTotal: 45,
+        kmTotales: 23,
+        placas: "ABC-1234"
+    ))
 }

@@ -8,6 +8,10 @@
 import SwiftUI
 
 struct IniciarServicioView: View {
+    // HARD CODED POR EL MOMENTO
+    @State public var idServicio: Int = 11
+    
+    
     @Environment(\.dismiss) var dismiss
     @State private var navegarADetalle = false
     @State private var navegarAConfirmarInicio = false
@@ -135,8 +139,27 @@ struct IniciarServicioView: View {
                         errorKMInicial.toggle()
                     }
                     else {
-                        horaInicio = Date()
-                        navegarAConfirmarInicio = true
+
+                        Task {
+                            do {
+                                let api = AleAPI()
+
+                                try await api.iniciarServicio(
+                                    idServicio: idServicio,
+                                    kmInicio: kmInicial!
+                                )
+                                
+                                try await api.actualizarEstatus(idServicio: 11, idEstatus: 2)
+                                
+                                print("Servicio iniciado con éxito.")
+                                
+                                horaInicio = Date()
+                                navegarAConfirmarInicio = true
+                                
+                            } catch {
+                                print("Error al iniciar servicio")
+                            }
+                        }
                     }
                 }) {
                     Text("INICIAR")

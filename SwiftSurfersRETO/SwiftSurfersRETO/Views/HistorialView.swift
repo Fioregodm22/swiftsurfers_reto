@@ -7,8 +7,42 @@
 
 import SwiftUI
 
+extension DateFormatter {
+    static let shortDate: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd" // Match your API format
+        return formatter
+    }()
+}
+
 struct HistorialView: View {
     
+    @State private var servicios: [ServicioHistorial] = []
+    @State private var cargando: Bool = false
+    
+    // HARDCODED
+    let idPersonal: Int = 6
+    
+    // Calcular estadisticas del dia
+    var serviciosDelDia: [ServicioHistorial] {
+        let hoy = DateFormatter.shortDate.string(from: Date())
+        return servicios.filter { $0.fecha == hoy }
+    }
+
+    var totalKmHoy: Int {
+        serviciosDelDia.compactMap { $0.kmTotales }.reduce(0, +)
+    }
+
+    var totalTiempoHoy: Int {
+        serviciosDelDia.compactMap { $0.tiempoTotal }.reduce(0, +)
+    }
+
+    var totalServiciosHoy: Int {
+        serviciosDelDia.count
+    }
+    
+    
+    // Colores
     let gris1 = Color(red: 242/255.0, green: 242/255.0, blue: 242/255.0)
     let gris2 = Color(red: 211/255.0, green: 211/255.0, blue: 211/255.0)
     let gris3 = Color(red: 153/255.0, green: 153/255.0, blue: 153/255.0)
@@ -50,10 +84,10 @@ struct HistorialView: View {
                     RoundedRectangle(cornerRadius: 20)
                         .fill(Color(blancoClaro))
                         .frame(width: 350, height: 100)
-
+                    
                     HStack (spacing: 30) {
                         VStack(spacing: 4) {
-                            Text("560 km")
+                            Text("\(totalKmHoy) km")
                                 .font(.system(size: 20))
                                 .bold(true)
                                 .foregroundStyle(azul)
@@ -62,7 +96,7 @@ struct HistorialView: View {
                                 .foregroundStyle(gris4)
                         }
                         VStack(spacing: 4) {
-                            Text("4:12 hrs")
+                            Text("\(totalTiempoHoy) hrs")
                                 .font(.system(size: 20))
                                 .bold(true)
                                 .foregroundStyle(azul)
@@ -71,7 +105,7 @@ struct HistorialView: View {
                                 .foregroundStyle(gris4)
                         }
                         VStack(spacing: 4) {
-                            Text("5")
+                            Text("\(totalServiciosHoy)")
                                 .font(.system(size: 20))
                                 .bold(true)
                                 .foregroundStyle(azul)
@@ -83,7 +117,7 @@ struct HistorialView: View {
                     .padding(.top, 30)
                     .padding(.leading, 30)
                     .padding(.trailing, 30)
-
+                    
                     Text("HOY")
                         .font(.system(size: 20))
                         .padding(.horizontal, 40)
@@ -102,16 +136,28 @@ struct HistorialView: View {
                         RoundedRectangle(cornerRadius: 20)
                             .fill(Color(blancoClaro))
                             .frame(width: 350, height: 450)
-                      
+                        
                         ScrollView {
                             VStack (alignment: .leading, spacing: 16) {
-                                HistorialRow(servicio: .ejemplo)
+                                if servicios.isEmpty {
+                                    Text("No hay servicios registrados")
+                                        .foregroundStyle(gris4)
+                                        .padding()
+                                } else {
+                                    ForEach(servicios) { servicio in
+                                        HistorialRow(servicio: servicio)
+        
+                                    }
+                                }
                             }
                             .padding(.top, 30)
                             .padding(.leading, 30)
                             .padding(.trailing, 30)
                         }
-
+                        .refreshable {
+                            cargarHistorial()
+                        }
+                        
                         Text("TODA TU ACTIVIDAD")
                             .font(.system(size: 20))
                             .padding(.horizontal, 40)
@@ -129,6 +175,28 @@ struct HistorialView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .background(gris2.opacity(0.3))
         .toolbar(.hidden)
+        .onAppear() {
+            cargarHistorial()
+        }
+    }
+    
+    func cargarHistorial() {
+        Task {
+            do {
+                self.cargando = true
+                let servicios = try await AleAPI.shared.getHistorialParamedico(idPersonal: idPersonal)
+                DispatchQueue.main.async {
+                    self.servicios = servicios
+                    self.cargando = false
+                    print("Servicios cargados: \(servicios.count)")
+                }
+            } catch {
+                DispatchQueue.main.async {
+                    self.cargando = false
+                    print("Error cargando los servicios: \(error)")
+                }
+            }
+        }
     }
 }
 
