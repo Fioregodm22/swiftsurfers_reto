@@ -7,14 +7,6 @@
 
 import SwiftUI
 
-struct Viaje: Identifiable {
-    let id = UUID()
-    let nombre: String
-    let distancia: String
-    let idServicio: Int
-    let fecha: Date
-    let estatus: String?
-}
 
 struct CalendarioView: View {
     @State private var mesActual = Date()
@@ -242,15 +234,15 @@ struct CalendarioView: View {
         .onAppear {
             Task {
                 // Para testing rápido: descomenta la línea siguiente y pon el id que quieras
-                 self.idworker = 5
+                // self.idworker = 5
 
                 // Si no hay id asignado, intenta leerlo de UserDefaults
-                /*
+                
                 if idworker == nil || idworker == 0 {
                     let savedId = UserDefaults.standard.integer(forKey: "idworker")
                     if savedId != 0 { self.idworker = savedId }
                 }
-                 */
+                 
                 await cargarViajesDelMes()
 
                 // Auto-seleccionar día actual si estamos en el mes actual
@@ -349,7 +341,6 @@ struct CalendarioView: View {
         isLoading = false
     }
     
-    // MARK: - Helper Methods
     func verificarViajesEnDia(_ dia: Int) -> Bool {
         let calendar = Calendar.current
         return viajes.contains { viaje in
@@ -422,7 +413,6 @@ struct CalendarioView: View {
     }
 }
 
-// MARK: - Viaje Row Component
 struct ViajeRow: View {
     let viaje: Viaje
     let colorIndex: Int
