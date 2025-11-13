@@ -245,17 +245,17 @@ struct CalendarioView: View {
         .onAppear {
             Task {
                 // ===== MODO TESTING: Descomenta la siguiente línea para usar ID fijo =====
-                 self.idworker = 5  // Cambia este número para probar diferentes usuarios
+               //  self.idworker = 5  // Cambia este número para probar diferentes usuarios
                 
                 // ===== MODO PRODUCCIÓN: Comenta estas líneas cuando uses ID fijo =====
                 // Obtener el ID del usuario desde UserDefaults
-                /*
+                
                 let savedId = UserDefaults.standard.integer(forKey: "idworker")
                 
                 if savedId != 0 {
                     self.idworker = savedId
                 }
-                 */
+                 
                 // ===== FIN MODO PRODUCCIÓN =====
                 
                 // Cargar todos los viajes del mes
