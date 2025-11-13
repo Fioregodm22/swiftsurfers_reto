@@ -25,7 +25,7 @@ struct LoginView: View {
         }
         let idWorkerValue = idworker ?? 0
         let idworkerString = String(idWorkerValue)
-        let base = "http://10.14.255.43:10205/validaruser"
+        let base = "http://toll-open-undertake-climb.trycloudflare.com/validaruser"
         
         var components = URLComponents(string: base)!
         components.queryItems = [
