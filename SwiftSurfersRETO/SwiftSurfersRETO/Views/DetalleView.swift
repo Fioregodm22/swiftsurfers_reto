@@ -9,9 +9,11 @@ import SwiftUI
 
 struct DetalleView: View {
     @Environment(\.dismiss) var dismiss
+    @Binding var hideTabBar: Bool
     @State private var navegarAIniciar = false
     @State private var detalle: Detalle?
     @State private var isLoading = true
+
     
     let naranja = Color(red: 255/255.0, green: 153/255.0, blue: 0/255.0)
     let azul = Color(red: 1/255.0, green: 104/255.0, blue: 138/255.0)
@@ -42,11 +44,16 @@ struct DetalleView: View {
                 }
             }
         }
+        .toolbar(.hidden, for: .tabBar)
         .navigationBarHidden(true)
         .onAppear {
+            hideTabBar = true
             Task {
                 await cargarDetalle()
             }
+        }
+        .onDisappear{
+            hideTabBar = false
         }
     }
     
@@ -261,6 +268,6 @@ struct DetalleView: View {
 
 #Preview {
     NavigationStack {
-        DetalleView(servicio: .ejemplo)
+        DetalleView(hideTabBar: .constant(false), servicio: .ejemplo)
     }
 }

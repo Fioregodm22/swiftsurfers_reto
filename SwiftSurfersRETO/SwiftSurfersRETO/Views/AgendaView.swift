@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct AgendaView: View {
+    @Binding var hideTabBar: Bool
     @State private var navigate = false
     @State private var servicios: [Servicio2] = []
     @State private var isLoading = false
@@ -101,7 +102,7 @@ struct AgendaView: View {
                 ScrollView {
                     VStack(spacing: 15) {
                         ForEach(servicios, id: \.idServicio) { servicio in
-                            NavigationLink(destination: DetalleView(servicio: servicio)) {
+                            NavigationLink(destination: DetalleView(hideTabBar: $hideTabBar, servicio: servicio)) {
                                 ReCuadro(servicio: servicio)
                             }
                         }
@@ -137,6 +138,6 @@ struct AgendaView: View {
 
 #Preview {
     NavigationStack {
-        AgendaView()
+        AgendaView(hideTabBar: .constant(false))
     }
 }
