@@ -81,7 +81,7 @@ struct LoginView: View {
                         .frame(width: 260, height: 50)
                         .background(
                             RoundedRectangle(cornerRadius: 20)
-                                .fill(Color(red: 242/255, green: 242/255, blue: 242/255))
+                                .fill(Color(red: 242/255,green: 242/255,blue: 242/255))
                         )
                     }
                 }
