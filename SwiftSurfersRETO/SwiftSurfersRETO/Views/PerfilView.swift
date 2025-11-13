@@ -178,7 +178,7 @@ struct PerfilView: View {
                 ZStack {
                     
                     RoundedRectangle(cornerRadius: 20.0)
-                        .frame(width: 325, height: 300)
+                        .frame(width: 350, height: 320)
                         .foregroundStyle(Color(red: 242/255, green: 242/255, blue: 242/255))
                     
                     
@@ -251,6 +251,7 @@ struct PerfilView: View {
                     }
                     
                 }
+                .padding(.bottom, 10)
                 
                 
                 Button("CERRAR SESIÓN"){
@@ -266,8 +267,8 @@ struct PerfilView: View {
                 .font(.title2)
                 .bold()
                 .padding(.horizontal, 30)
-                .padding(.top, 10)
-                .padding(.bottom, 10)
+                .padding(.bottom, 6)
+                
                 
                 .fullScreenCover(isPresented: $showingLoginScreen) { LoginView() }
                 
@@ -291,7 +292,7 @@ struct PerfilView: View {
                 .font(.title2)
                 .bold()
                 .padding(.horizontal, 15)
-                .padding(.top, 10)
+                .padding(.top, 2)
                 
                 Spacer()
                 
