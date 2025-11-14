@@ -7,14 +7,6 @@
 
 import SwiftUI
 
-struct Viaje: Identifiable {
-    let id = UUID()
-    let nombre: String
-    let distancia: String
-    let idServicio: Int
-    let fecha: Date
-    let estatus: String?
-}
 
 struct CalendarioView: View {
     @State private var mesActual = Date()
@@ -103,15 +95,13 @@ struct CalendarioView: View {
                     .padding(.horizontal, 20)
                     .padding(.top, 20)
                     
-                    // Botón para ir al mes actual (solo mostrar si no estamos en el mes actual)
+                    // Botón para ir al mes actual (solo si no estamos en el mes actual)
                     if !esMesActual() {
                         Button(action: {
                             mesActual = Date()
                             diaSeleccionado = nil
                             viajesFiltrados = []
-                            Task {
-                                await cargarViajesDelMes()
-                            }
+                            Task { await cargarViajesDelMes() }
                         }) {
                             HStack(spacing: 6) {
                                 Image(systemName: "calendar.circle.fill")
@@ -159,7 +149,6 @@ struct CalendarioView: View {
                                                 .background(dia == diaSeleccionado ? Color(red: 255/255, green: 153/255, blue: 0/255) : Color.white)
                                                 .clipShape(Circle())
                                             
-                                            // Indicador de viajes
                                             if tieneViajes {
                                                 Circle()
                                                     .fill(Color(red: 1/255, green: 104/255, blue: 138/255))
@@ -244,32 +233,26 @@ struct CalendarioView: View {
         .background(Color.white)
         .onAppear {
             Task {
-                // ===== MODO TESTING: Descomenta la siguiente línea para usar ID fijo =====
-               //  self.idworker = 5  // Cambia este número para probar diferentes usuarios
+                // Para testing rápido: descomenta la línea siguiente y pon el id que quieras
+                // self.idworker = 5
+
+                // Si no hay id asignado, intenta leerlo de UserDefaults
                 
-                // ===== MODO PRODUCCIÓN: Comenta estas líneas cuando uses ID fijo =====
-                // Obtener el ID del usuario desde UserDefaults
-                
-                let savedId = UserDefaults.standard.integer(forKey: "idworker")
-                
-                if savedId != 0 {
-                    self.idworker = savedId
+                if idworker == nil || idworker == 0 {
+                    let savedId = UserDefaults.standard.integer(forKey: "idworker")
+                    if savedId != 0 { self.idworker = savedId }
                 }
                  
-                // ===== FIN MODO PRODUCCIÓN =====
-                
-                // Cargar todos los viajes del mes
                 await cargarViajesDelMes()
-                
-                // Seleccionar el día actual automáticamente SI estamos en el mes actual
+
+                // Auto-seleccionar día actual si estamos en el mes actual
                 let calendar = Calendar.current
                 let hoy = Date()
                 let mesHoy = calendar.component(.month, from: hoy)
                 let yearHoy = calendar.component(.year, from: hoy)
                 let mesVista = calendar.component(.month, from: mesActual)
                 let yearVista = calendar.component(.year, from: mesActual)
-                
-                // Solo auto-seleccionar si estamos viendo el mes actual
+
                 if mesHoy == mesVista && yearHoy == yearVista {
                     let diaHoy = calendar.component(.day, from: hoy)
                     diaSeleccionado = diaHoy
@@ -279,9 +262,7 @@ struct CalendarioView: View {
         }
         .alert("Error", isPresented: $showError) {
             Button("Reintentar") {
-                Task {
-                    await cargarViajesDelMes()
-                }
+                Task { await cargarViajesDelMes() }
             }
             Button("Cancelar", role: .cancel) { }
         } message: {
@@ -291,7 +272,6 @@ struct CalendarioView: View {
     
     // MARK: - API Function
     func cargarViajesDelMes() async {
-        // Validar que tenemos un ID válido
         guard let id = idworker, id != 0 else {
             errorMessage = "No se encontró ID de usuario"
             showError = true
@@ -300,9 +280,6 @@ struct CalendarioView: View {
         
         isLoading = true
         errorMessage = nil
-        
-        print("🔍 DEBUG: ID Usuario: \(id)")
-        print("🔍 DEBUG: Mes actual: \(nombreMes())")
         
         let base = "http://10.14.255.43:10202/getviaje"
         let idUsuarioString = String(id)
@@ -318,8 +295,6 @@ struct CalendarioView: View {
             isLoading = false
             return
         }
-        
-        print("🔍 DEBUG: URL: \(url)")
         
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
@@ -338,23 +313,13 @@ struct CalendarioView: View {
             let decoder = JSONDecoder()
             let result = try decoder.decode(ViajeAPIResponse.self, from: data)
             
-            print("🔍 DEBUG: Total viajes recibidos del API: \(result.Info.count)")
-            
             // Convertir los datos del API al formato de Viaje
-            // El API devuelve fechas en formato: "Mon, 10 Nov 2025 00:00:00 GMT"
             let dateFormatter = DateFormatter()
             dateFormatter.locale = Locale(identifier: "en_US_POSIX")
             dateFormatter.dateFormat = "EEE, dd MMM yyyy HH:mm:ss zzz"
             
             viajes = result.Info.compactMap { viajeData -> Viaje? in
-                print("🔍 DEBUG: Procesando viaje - ID: \(viajeData.idServicio), Fecha string: \(viajeData.fecha)")
-                
-                guard let fecha = dateFormatter.date(from: viajeData.fecha) else {
-                    print("❌ ERROR: No se pudo parsear fecha: \(viajeData.fecha)")
-                    return nil
-                }
-                
-                print("✅ Fecha parseada correctamente: \(fecha)")
+                guard let fecha = dateFormatter.date(from: viajeData.fecha) else { return nil }
                 
                 let distanciaTexto = viajeData.kmFinal != nil ?
                     String(format: "%.2f km", viajeData.kmFinal!) : "Sin registro"
@@ -368,19 +333,7 @@ struct CalendarioView: View {
                 )
             }
             
-            print("Viajes cargados exitosamente: \(viajes.count) viajes")
-            
-            // Mostrar fechas de los viajes para debug
-            for viaje in viajes {
-                let calendar = Calendar.current
-                let dia = calendar.component(.day, from: viaje.fecha)
-                let mes = calendar.component(.month, from: viaje.fecha)
-                let year = calendar.component(.year, from: viaje.fecha)
-                print("📅 Viaje #\(viaje.idServicio): \(dia)/\(mes)/\(year)")
-            }
-            
         } catch {
-            print("Error al cargar viajes: \(error.localizedDescription)")
             errorMessage = "Error al cargar los viajes: \(error.localizedDescription)"
             showError = true
         }
@@ -388,7 +341,6 @@ struct CalendarioView: View {
         isLoading = false
     }
     
-    // MARK: - Helper Methods
     func verificarViajesEnDia(_ dia: Int) -> Bool {
         let calendar = Calendar.current
         return viajes.contains { viaje in
@@ -408,24 +360,13 @@ struct CalendarioView: View {
         let mesActualNum = calendar.component(.month, from: mesActual)
         let yearActual = calendar.component(.year, from: mesActual)
         
-        print("🔍 Filtrando viajes para: \(dia)/\(mesActualNum)/\(yearActual)")
-        print("🔍 Total de viajes disponibles: \(viajes.count)")
-        
         viajesFiltrados = viajes.filter { viaje in
             let diaViaje = calendar.component(.day, from: viaje.fecha)
             let mesViaje = calendar.component(.month, from: viaje.fecha)
             let yearViaje = calendar.component(.year, from: viaje.fecha)
             
-            let coincide = diaViaje == dia && mesViaje == mesActualNum && yearViaje == yearActual
-            
-            if coincide {
-                print("✅ Viaje #\(viaje.idServicio) coincide: \(diaViaje)/\(mesViaje)/\(yearViaje)")
-            }
-            
-            return coincide
+            return diaViaje == dia && mesViaje == mesActualNum && yearViaje == yearActual
         }
-        
-        print("🔍 Viajes filtrados: \(viajesFiltrados.count)")
     }
     
     func nombreMes() -> String {
@@ -440,9 +381,7 @@ struct CalendarioView: View {
             mesActual = nuevoMes
             diaSeleccionado = nil
             viajesFiltrados = []
-            Task {
-                await cargarViajesDelMes()
-            }
+            Task { await cargarViajesDelMes() }
         }
     }
     
@@ -474,7 +413,6 @@ struct CalendarioView: View {
     }
 }
 
-// MARK: - Viaje Row Component
 struct ViajeRow: View {
     let viaje: Viaje
     let colorIndex: Int
