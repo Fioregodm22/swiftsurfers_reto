@@ -321,8 +321,8 @@ struct CalendarioView: View {
             viajes = result.Info.compactMap { viajeData -> Viaje? in
                 guard let fecha = dateFormatter.date(from: viajeData.fecha) else { return nil }
                 
-                let distanciaTexto = viajeData.kmFinal != nil ?
-                    String(format: "%.2f km", viajeData.kmFinal!) : "Sin registro"
+                let distanciaTexto = viajeData.kmTotales != nil ?
+                    String(format: "%.2f km", viajeData.kmTotales!) : "Sin registro"
                 
                 return Viaje(
                     nombre: "Servicio #\(viajeData.idServicio)",
