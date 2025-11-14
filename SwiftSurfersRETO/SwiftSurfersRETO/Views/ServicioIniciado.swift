@@ -1,14 +1,7 @@
-//
-//  ContentView.swift
-//  RETO
-//
-//  Created by Salvador Ancer on 13/10/25.
-//
-
 import SwiftUI
 
 struct ServicioIniciado: View {
-    @State private var navegarADetalle = false
+    @Binding var shouldDismissToRoot: Bool
     @Environment(\.dismiss) var dismiss
     
     var body: some View {
@@ -33,8 +26,7 @@ struct ServicioIniciado: View {
                 
                 Button(action: {
                     dismiss()
-                    
-                    
+                    shouldDismissToRoot = true
                 }){
                     Text("ACEPTAR")
                         .font(.system(size: 20))
@@ -51,16 +43,12 @@ struct ServicioIniciado: View {
             }
             .ignoresSafeArea(edges: .all)
             .toolbar(.hidden)
-            
-            
-        
         }
     }
-    
 }
 
 #Preview {
     NavigationStack {
-        ServicioIniciado()
+        ServicioIniciado(shouldDismissToRoot: .constant(false))
     }
 }

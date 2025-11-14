@@ -29,245 +29,231 @@ struct CalendarioView: View {
     }
     
     var body: some View {
-        VStack(spacing: 0) {
-            // Header
-            ZStack(alignment: .topLeading) {
-                Color(red: 1/255, green: 104/255, blue: 138/255)
-                    .ignoresSafeArea(edges: .top)
-                
-                HStack(alignment: .center, spacing: 16) {
-                    Image("novaLogo1")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: 80)
-                        .padding(.leading, 20)
+            VStack{
+                // Header
+                ZStack(alignment: .topLeading) {
+                    Color(red: 1/255, green: 104/255, blue: 138/255)
+                        .ignoresSafeArea(edges: .top)
                     
-                    Text("Calendario")
-                        .foregroundStyle(Color.white)
-                        .bold()
-                        .font(.system(size: 28))
-                    
-                    Spacer()
-                }
-                .padding(.top, 5)
-            }
-            .frame(maxWidth: .infinity)
-            .frame(height: 120)
-            
-            // Calendario
-            ZStack {
-                Color.white
-                    .ignoresSafeArea()
-                
-                VStack(spacing: 16) {
-                    // Meses (Nav)
-                    HStack(spacing: 12) {
-                        Button(action: { cambiarMes(-1) }) {
-                            Image(systemName: "chevron.left")
-                                .foregroundColor(.white)
-                                .frame(width: 44, height: 44)
-                                .background(Color(red: 255/255, green: 153/255, blue: 0/255))
-                                .clipShape(Circle())
-                        }
+                    HStack(alignment: .center, spacing: 16) {
+                        Image("novaLogo1")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 80)
+                            .padding(.leading, 20)
                         
-                        VStack(spacing: 4) {
-                            Text(nombreMes().uppercased())
-                                .font(.system(size: 22, weight: .bold))
-                                .foregroundColor(.white)
-                            
-                            Text("\(yearActual)")
-                                .font(.system(size: 14, weight: .medium))
-                                .foregroundColor(.white.opacity(0.9))
-                        }
-                        .frame(width: 250)
-                        .padding(.vertical, 8)
-                        .background(Color(red: 255/255, green: 153/255, blue: 0/255))
-                        .cornerRadius(25)
+                        Text("Calendario")
+                            .foregroundStyle(Color.white)
+                            .bold()
+                            .font(.system(size: 28))
                         
-                        Button(action: { cambiarMes(1) }) {
-                            Image(systemName: "chevron.right")
-                                .foregroundColor(.white)
-                                .frame(width: 44, height: 44)
-                                .background(Color(red: 255/255, green: 153/255, blue: 0/255))
-                                .clipShape(Circle())
-                        }
+                        Spacer()
                     }
-                    .padding(.horizontal, 20)
-                    .padding(.top, 20)
+                    .padding(.top, 5)
+                }
+                .frame(maxWidth: .infinity)
+                .frame(height: 120)
+                
+                
+                // Calendario
+                
+                ZStack {
+                    Color.white
+                        .ignoresSafeArea()
                     
-                    // Botón para ir al mes actual (solo si no estamos en el mes actual)
-                    if !esMesActual() {
-                        Button(action: {
-                            mesActual = Date()
-                            diaSeleccionado = nil
-                            viajesFiltrados = []
-                            Task { await cargarViajesDelMes() }
-                        }) {
-                            HStack(spacing: 6) {
-                                Image(systemName: "calendar.circle.fill")
-                                Text("Ir al mes actual")
+                    VStack(spacing: 16) {
+                        // Meses (Nav)
+                        HStack(spacing: 12) {
+                            Button(action: { cambiarMes(-1) }) {
+                                Image(systemName: "chevron.left")
+                                    .foregroundColor(.white)
+                                    .frame(width: 44, height: 44)
+                                    .background(Color(red: 255/255, green: 153/255, blue: 0/255))
+                                    .clipShape(Circle())
                             }
-                            .font(.system(size: 14, weight: .semibold))
-                            .foregroundColor(Color(red: 1/255, green: 104/255, blue: 138/255))
-                            .padding(.horizontal, 16)
+                            
+                            VStack(spacing: 4) {
+                                Text(nombreMes().uppercased())
+                                    .font(.system(size: 22, weight: .bold))
+                                    .foregroundColor(.white)
+                                
+                                Text("\(yearActual)")
+                                    .font(.system(size: 14, weight: .medium))
+                                    .foregroundColor(.white.opacity(0.9))
+                            }
+                            .frame(width: 250)
                             .padding(.vertical, 8)
-                            .background(Color(red: 1/255, green: 104/255, blue: 138/255).opacity(0.1))
-                            .cornerRadius(20)
-                        }
-                        .padding(.horizontal, 20)
-                    }
-                    
-                    // Grid Calendar
-                    ZStack {
-                        RoundedRectangle(cornerRadius: 15)
-                            .fill(Color(white: 0.95))
-                        
-                        VStack(spacing: 12) {
-                            // Dias de la semana
-                            HStack(spacing: 0) {
-                                ForEach(["Lu", "Ma", "Mi", "Ju", "Vi", "Sa", "Do"], id: \.self) { dia in
-                                    Text(dia)
-                                        .font(.system(size: 14, weight: .medium))
-                                        .foregroundColor(Color(white: 0.4))
-                                        .frame(maxWidth: .infinity)
-                                }
-                            }
-                            .padding(.horizontal, 10)
-                            .padding(.top, 15)
+                            .background(Color(red: 255/255, green: 153/255, blue: 0/255))
+                            .cornerRadius(25)
                             
-                            // Dias
-                            LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 4), count: 7), spacing: 8) {
-                                ForEach(obtenerDiasDelMes(), id: \.self) { dia in
-                                    if dia > 0 {
-                                        let tieneViajes = verificarViajesEnDia(dia)
-                                        
-                                        ZStack {
-                                            Text("\(dia)")
-                                                .font(.system(size: 16, weight: dia == diaSeleccionado ? .bold : .regular))
-                                                .foregroundColor(dia == diaSeleccionado ? .white : Color(white: 0.3))
-                                                .frame(width: 44, height: 44)
-                                                .background(dia == diaSeleccionado ? Color(red: 255/255, green: 153/255, blue: 0/255) : Color.white)
-                                                .clipShape(Circle())
-                                            
-                                            if tieneViajes {
-                                                Circle()
-                                                    .fill(Color(red: 1/255, green: 104/255, blue: 138/255))
-                                                    .frame(width: 6, height: 6)
-                                                    .offset(y: 18)
-                                            }
-                                        }
-                                        .onTapGesture {
-                                            diaSeleccionado = dia
-                                            filtrarViajesPorDia(dia)
-                                        }
-                                    } else {
-                                        Text("")
-                                            .frame(width: 44, height: 44)
-                                    }
-                                }
+                            Button(action: { cambiarMes(1) }) {
+                                Image(systemName: "chevron.right")
+                                    .foregroundColor(.white)
+                                    .frame(width: 44, height: 44)
+                                    .background(Color(red: 255/255, green: 153/255, blue: 0/255))
+                                    .clipShape(Circle())
                             }
-                            .padding(.horizontal, 10)
-                            .padding(.bottom, 15)
-                        }
-                    }
-                    .padding(.horizontal, 20)
-                    
-                    Divider().padding(.horizontal, 20)
-                    
-                    // Sección de información de fecha seleccionada
-                    if let diaSelec = diaSeleccionado {
-                        HStack {
-                            Text("Viajes del \(diaSelec) de \(nombreMes()) \(yearActual)")
-                                .font(.system(size: 16, weight: .semibold))
-                                .foregroundColor(Color(red: 102/255, green: 102/255, blue: 102/255))
-                            Spacer()
-                            Text("(\(viajesFiltrados.count))")
-                                .font(.system(size: 16, weight: .bold))
-                                .foregroundColor(Color(red: 255/255, green: 153/255, blue: 0/255))
                         }
                         .padding(.horizontal, 20)
-                    }
-                    
-                    // Viajes
-                    ZStack {
-                        if isLoading {
-                            ProgressView("Cargando viajes...")
-                                .padding()
-                        } else if diaSeleccionado == nil {
+                        .padding(.top, 20)
+                        
+                        // Botón para ir al mes actual (solo si no estamos en el mes actual)
+                        
+                        // Grid Calendar
+                        ZStack {
+                            RoundedRectangle(cornerRadius: 15)
+                                .fill(Color(white: 0.95))
+                            
                             VStack(spacing: 12) {
-                                Image(systemName: "calendar")
-                                    .font(.system(size: 40))
-                                    .foregroundColor(Color(red: 255/255, green: 153/255, blue: 0/255))
-                                Text("Selecciona un día para ver los viajes")
-                                    .font(.system(size: 16))
-                                    .foregroundColor(.gray)
-                                    .multilineTextAlignment(.center)
-                            }
-                            .frame(height: 200)
-                        } else if viajesFiltrados.isEmpty {
-                            VStack(spacing: 12) {
-                                Image(systemName: "car.circle")
-                                    .font(.system(size: 40))
-                                    .foregroundColor(Color(red: 1/255, green: 104/255, blue: 138/255))
-                                Text("No hay viajes en esta fecha")
-                                    .font(.system(size: 16))
-                                    .foregroundColor(.gray)
-                            }
-                            .frame(height: 200)
-                        } else {
-                            ScrollView {
-                                VStack(spacing: 12) {
-                                    ForEach(Array(viajesFiltrados.enumerated()), id: \.element.id) { index, viaje in
-                                        ViajeRow(viaje: viaje, colorIndex: index)
+                                // Dias de la semana
+                                HStack(spacing: 0) {
+                                    ForEach(["Lu", "Ma", "Mi", "Ju", "Vi", "Sa", "Do"], id: \.self) { dia in
+                                        Text(dia)
+                                            .font(.system(size: 14, weight: .medium))
+                                            .foregroundColor(Color(white: 0.4))
+                                            .frame(maxWidth: .infinity)
                                     }
                                 }
-                                .padding(.horizontal, 20)
-                                .padding(.top, 5)
+                                .padding(.horizontal, 10)
+                                .padding(.top, 15)
+                                
+                                // Dias
+                                LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 4), count: 7), spacing: 8) {
+                                    ForEach(obtenerDiasDelMes(), id: \.self) { dia in
+                                        if dia > 0 {
+                                            let tieneViajes = verificarViajesEnDia(dia)
+                                            
+                                            ZStack {
+                                                Text("\(dia)")
+                                                    .font(.system(size: 16, weight: dia == diaSeleccionado ? .bold : .regular))
+                                                    .foregroundColor(dia == diaSeleccionado ? .white : Color(white: 0.3))
+                                                    .frame(width: 44, height: 44)
+                                                    .background(dia == diaSeleccionado ? Color(red: 255/255, green: 153/255, blue: 0/255) : Color.white)
+                                                    .clipShape(Circle())
+                                                
+                                                if tieneViajes {
+                                                    Circle()
+                                                        .fill(Color(red: 1/255, green: 104/255, blue: 138/255))
+                                                        .frame(width: 6, height: 6)
+                                                        .offset(y: 18)
+                                                }
+                                            }
+                                            .onTapGesture {
+                                                diaSeleccionado = dia
+                                                filtrarViajesPorDia(dia)
+                                            }
+                                        } else {
+                                            Text("")
+                                                .frame(width: 44, height: 44)
+                                        }
+                                    }
+                                }
+                                .padding(.horizontal, 10)
+                                .padding(.bottom, 15)
                             }
-                            .frame(height: 200)
+                        }
+                        .padding(.horizontal, 20)
+                        
+                        Divider().padding(.horizontal, 20)
+                        
+                        // Sección de información de fecha seleccionada
+                        if let diaSelec = diaSeleccionado {
+                            HStack {
+                                Text("Viajes del \(diaSelec) de \(nombreMes()) \(yearActual)")
+                                    .font(.system(size: 16, weight: .semibold))
+                                    .foregroundColor(Color(red: 102/255, green: 102/255, blue: 102/255))
+                                Spacer()
+                                Text("(\(viajesFiltrados.count))")
+                                    .font(.system(size: 16, weight: .bold))
+                                    .foregroundColor(Color(red: 255/255, green: 153/255, blue: 0/255))
+                            }
+                            .padding(.horizontal, 20)
+                        }
+                        
+                        // Viajes
+                        ZStack {
+                            if isLoading {
+                                ProgressView("Cargando viajes...")
+                                    .padding()
+                            } else if diaSeleccionado == nil {
+                                VStack(spacing: 12) {
+                                    Image(systemName: "calendar")
+                                        .font(.system(size: 40))
+                                        .foregroundColor(Color(red: 255/255, green: 153/255, blue: 0/255))
+                                    Text("Selecciona un día para ver los viajes")
+                                        .font(.system(size: 16))
+                                        .foregroundColor(.gray)
+                                        .multilineTextAlignment(.center)
+                                }
+                                .frame(height: 200)
+                                
+                            } else if viajesFiltrados.isEmpty {
+                                VStack(spacing: 12) {
+                                    Image(systemName: "car.circle")
+                                        .font(.system(size: 40))
+                                        .foregroundColor(Color(red: 1/255, green: 104/255, blue: 138/255))
+                                    Text("No hay viajes en esta fecha")
+                                        .font(.system(size: 16))
+                                        .foregroundColor(.gray)
+                                }
+                                .frame(height: 200)
+                                
+                            } else {
+                                
+                                ScrollView {
+                                    VStack(spacing: 12) {
+                                        ForEach(Array(viajesFiltrados.enumerated()), id: \.element.id) { index, viaje in
+                                            ViajeRow(viaje: viaje, colorIndex: index)
+                                        }
+                                    }
+                                    .padding(.horizontal, 20)
+                                    .padding(.top, 5)
+                                }
+                                .frame(height: 200)
+                            }
                         }
                     }
                 }
-            }
-        }
-        .background(Color.white)
-        .onAppear {
-            Task {
-                // Para testing rápido: descomenta la línea siguiente y pon el id que quieras
-                // self.idworker = 5
-
-                // Si no hay id asignado, intenta leerlo de UserDefaults
                 
-                if idworker == nil || idworker == 0 {
-                    let savedId = UserDefaults.standard.integer(forKey: "idworker")
-                    if savedId != 0 { self.idworker = savedId }
-                }
-                 
-                await cargarViajesDelMes()
-
-                // Auto-seleccionar día actual si estamos en el mes actual
-                let calendar = Calendar.current
-                let hoy = Date()
-                let mesHoy = calendar.component(.month, from: hoy)
-                let yearHoy = calendar.component(.year, from: hoy)
-                let mesVista = calendar.component(.month, from: mesActual)
-                let yearVista = calendar.component(.year, from: mesActual)
-
-                if mesHoy == mesVista && yearHoy == yearVista {
-                    let diaHoy = calendar.component(.day, from: hoy)
-                    diaSeleccionado = diaHoy
-                    filtrarViajesPorDia(diaHoy)
+            }
+            .background(Color.white)
+            .onAppear {
+                Task {
+                    // Para testing rápido: descomenta la línea siguiente y pon el id que quieras
+                    // self.idworker = 5
+                    
+                    // Si no hay id asignado, intenta leerlo de UserDefaults
+                    
+                    if idworker == nil || idworker == 0 {
+                        let savedId = UserDefaults.standard.integer(forKey: "idworker")
+                        if savedId != 0 { self.idworker = savedId }
+                    }
+                    
+                    await cargarViajesDelMes()
+                    
+                    // Auto-seleccionar día actual si estamos en el mes actual
+                    let calendar = Calendar.current
+                    let hoy = Date()
+                    let mesHoy = calendar.component(.month, from: hoy)
+                    let yearHoy = calendar.component(.year, from: hoy)
+                    let mesVista = calendar.component(.month, from: mesActual)
+                    let yearVista = calendar.component(.year, from: mesActual)
+                    
+                    if mesHoy == mesVista && yearHoy == yearVista {
+                        let diaHoy = calendar.component(.day, from: hoy)
+                        diaSeleccionado = diaHoy
+                        filtrarViajesPorDia(diaHoy)
+                    }
                 }
             }
-        }
-        .alert("Error", isPresented: $showError) {
-            Button("Reintentar") {
-                Task { await cargarViajesDelMes() }
+            .alert("Error", isPresented: $showError) {
+                Button("Reintentar") {
+                    Task { await cargarViajesDelMes() }
+                }
+                Button("Cancelar", role: .cancel) { }
+            } message: {
+                Text(errorMessage ?? "Error desconocido al cargar viajes")
             }
-            Button("Cancelar", role: .cancel) { }
-        } message: {
-            Text(errorMessage ?? "Error desconocido al cargar viajes")
-        }
     }
     
     // MARK: - API Function
@@ -281,7 +267,7 @@ struct CalendarioView: View {
         isLoading = true
         errorMessage = nil
         
-        let base = "http://10.14.255.43:10202/getviaje"
+        let base = "https://toll-open-undertake-climb.trycloudflare.com/getviaje"
         let idUsuarioString = String(id)
         
         var urlComponents = URLComponents(string: base)!
@@ -321,8 +307,8 @@ struct CalendarioView: View {
             viajes = result.Info.compactMap { viajeData -> Viaje? in
                 guard let fecha = dateFormatter.date(from: viajeData.fecha) else { return nil }
                 
-                let distanciaTexto = viajeData.kmFinal != nil ?
-                    String(format: "%.2f km", viajeData.kmFinal!) : "Sin registro"
+                let distanciaTexto = viajeData.kmTotales != nil ?
+                    String(format: "%.2f km", viajeData.kmTotales!) : "Sin registro"
                 
                 return Viaje(
                     nombre: "Servicio #\(viajeData.idServicio)",
@@ -385,14 +371,6 @@ struct CalendarioView: View {
         }
     }
     
-    func esMesActual() -> Bool {
-        let calendar = Calendar.current
-        let mesActualNum = calendar.component(.month, from: mesActual)
-        let yearActualNum = calendar.component(.year, from: mesActual)
-        let mesHoy = calendar.component(.month, from: Date())
-        let yearHoy = calendar.component(.year, from: Date())
-        return mesActualNum == mesHoy && yearActualNum == yearHoy
-    }
     
     func obtenerDiasDelMes() -> [Int] {
         let calendar = Calendar.current
