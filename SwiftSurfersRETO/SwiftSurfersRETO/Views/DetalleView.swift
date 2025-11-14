@@ -11,6 +11,7 @@ struct DetalleView: View {
     @Environment(\.dismiss) var dismiss
     @Binding var hideTabBar: Bool
     @State private var navegarAIniciar = false
+    @State private var navegarAFinalizar = false
     @State private var isLoading = true
     @State var marcadorList: [Marcador] = []
     
@@ -209,7 +210,18 @@ struct DetalleView: View {
                         .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
                 }
                 
-                MapaView(latitud: 25.67507, longitud: -100.31847, customMark: marcadorList, showPosicion: true)
+                MapaView(
+                    latitud: calcularLatitudMedia(
+                        latitudOrigen: detalle.latitudOrigen,
+                        latitudDestino: detalle.latitudDestino
+                    ),
+                    longitud: calcularLongitudMedia(
+                        longitudOrigen: detalle.longitudOrigen,
+                        longitudDestino: detalle.longitudDestino
+                    ),
+                    customMark: marcadorList,
+                    showPosicion: true
+                )
                     .frame(height: 200)
                     .clipped()
                     .onTapGesture {
@@ -318,8 +330,7 @@ struct DetalleView: View {
                 }
             } else if servicio.idEstatus == 2 {
                 Button(action: {
-                    
-                    navegarAIniciar = true
+                    navegarAFinalizar = true
                 }) {
                     HStack(spacing: 12) {
                         Image(systemName: "stop.circle.fill")
@@ -337,8 +348,8 @@ struct DetalleView: View {
                             .fill(azul)
                     )
                 }
-                .navigationDestination(isPresented: $navegarAIniciar) {
-                    IniciarServicioView(idServicio: servicio.idServicio)
+                .navigationDestination(isPresented: $navegarAFinalizar) {
+                    FinalizarServicioView()
                 }
             }
             
