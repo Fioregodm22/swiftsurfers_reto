@@ -89,7 +89,7 @@ extension Servicio {
         idServicio: 1,
         nombreSocio: "Juan",
         origen: "Hospital Central",
-        tipoServicio: "Sencillo"
+        tipoServicio: "Sencillo",
     )
 }
 
@@ -106,7 +106,7 @@ extension Servicio {
         idServicio: 2,
         nombreSocio: "María",
         origen: "Hospital Zambrano",
-        tipoServicio: "Urgente"
+        tipoServicio: "Urgente",
     )
 }
 

@@ -17,13 +17,11 @@ struct DetalleView: View {
     
     @State private var detalle: Detalle?
     let servicio: Servicio
-    var estado: EstadoServicio {
-        EstadoServicio(id: servicio.idEstatus)
-    }
+    var estado: EstadoServicio {EstadoServicio(id: servicio.idEstatus)}
 
     let naranja = Color(red: 255/255.0, green: 153/255.0, blue: 0/255.0)
     let azul = Color(red: 1/255.0, green: 104/255.0, blue: 138/255.0)
-    
+
     
     var body: some View {
         Group {
@@ -73,7 +71,6 @@ struct DetalleView: View {
                     }
                     .padding(.top, 20)
                     
-                    // Botón secundario para reintentar
                     Button(action: {
                         Task {
                             await cargarDetalle()
@@ -94,7 +91,6 @@ struct DetalleView: View {
                                 .stroke(azul, lineWidth: 2)
                         )
                     }
-                    
                     Spacer()
                 }
                 .padding()
@@ -115,7 +111,6 @@ struct DetalleView: View {
     
     func cargarDetalle() async {
         isLoading = true
-        
         do {
             let detalleObtenido = try await obtenerDetalle(idServicio: servicio.idServicio)
             self.detalle = detalleObtenido
@@ -141,10 +136,8 @@ struct DetalleView: View {
         } catch {
             print("Error al cargar detalle: \(error.localizedDescription)")
         }
-        
         isLoading = false
     }
-    
     
     func contenidoDetalle(detalle: Detalle) -> some View {
         VStack(spacing: servicio.idEstatus == 3 ? 25 : 15){
@@ -227,6 +220,29 @@ struct DetalleView: View {
                     .onTapGesture {
                         abrirGoogleMaps(latitud: detalle.latitudDestino, longitud: detalle.longitudDestino)
                     }
+                HStack{
+                        HStack(spacing: 6) {
+                            Circle()
+                                .fill(naranja)
+                                .frame(width: 12, height: 12)
+                            Text("Origen")
+                                .font(.system(size: 14))
+                                .foregroundColor(.gray)
+                        }
+                        .padding(.trailing , 10)
+                        
+                        HStack(spacing: 6) {
+                            Circle()
+                                .fill(azul)
+                                .frame(width: 12, height: 12)
+                            Text("Destino")
+                                .font(.system(size: 14))
+                                .foregroundColor(.gray)
+                        }
+                    Spacer()
+                }
+                .padding(.horizontal, 10)
+                .padding(.top, 2)
             }
             .padding(10)
             .background(Color.gray.opacity(0.15))
@@ -349,7 +365,7 @@ struct DetalleView: View {
                     )
                 }
                 .navigationDestination(isPresented: $navegarAFinalizar) {
-                    FinalizarServicioView(idDetalle: servicio.idServicio)
+                    FinalizarServicioView(idDetalle: detalle.idDetalle)
                 }
             }
             

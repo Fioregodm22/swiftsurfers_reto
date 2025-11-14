@@ -10,7 +10,7 @@ struct IniciarServicioView: View {
     @State public var distanciaRecorrida: Double? = nil
     @State var calendario = Calendar.current
     @State var horaInicio = Date()
-    
+        
     @State private var errorKMInicial: Bool = false
     
     let gris1 = Color(red: 242/255.0, green: 242/255.0, blue: 242/255.0)
