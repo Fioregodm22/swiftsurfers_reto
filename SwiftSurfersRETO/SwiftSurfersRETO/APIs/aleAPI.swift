@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct APIResponse<T: Codable>: Codable {
+struct APIResponseAle<T: Codable>: Codable {
     let success: Bool
     let message: String?
     let data: T?
@@ -46,7 +46,7 @@ class AleAPI {
             throw APIError.invalidResponse
         }
         
-        let apiResponse = try JSONDecoder().decode(APIResponse<CrearServicioResponse>.self, from: data)
+        let apiResponse = try JSONDecoder().decode(APIResponseAle<CrearServicioResponse>.self, from: data)
         guard let responseData = apiResponse.data else {
             throw APIError.noData
         }
@@ -70,7 +70,7 @@ class AleAPI {
             throw APIError.invalidResponse
         }
         
-        let apiResponse = try JSONDecoder().decode(APIResponse<IniciarServicioResponse>.self, from: data)
+        let apiResponse = try JSONDecoder().decode(APIResponseAle<IniciarServicioResponse>.self, from: data)
         guard let responseData = apiResponse.data else {
             throw APIError.noData
         }
@@ -94,7 +94,7 @@ class AleAPI {
             throw APIError.invalidResponse
         }
         
-        let apiResponse = try JSONDecoder().decode(APIResponse<String>.self, from: data)
+        let apiResponse = try JSONDecoder().decode(APIResponseAle<String>.self, from: data)
         return apiResponse.success
     }
 }

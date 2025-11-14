@@ -8,9 +8,9 @@
 import SwiftUI
 
 extension DateFormatter {
-    static let shortDate: DateFormatter = {
+    static let fechaCorta: DateFormatter = {
         let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd" // Match your API format
+        formatter.dateFormat = "yyyy-MM-dd"
         return formatter
     }()
 }
@@ -19,13 +19,17 @@ struct HistorialView: View {
     
     @State private var servicios: [ServicioHistorial] = []
     @State private var cargando: Bool = false
+    @State private var verTodos: Bool = true
+    @State private var fechaSeleccionada: Date = Date()
+    @State var idPersonal: Int = 0
+ 
+    var serviciosFiltrados: [ServicioHistorial] {
+        let fechaFiltro = DateFormatter.fechaCorta.string(from: fechaSeleccionada)
+        return servicios.filter { $0.fecha == fechaFiltro }
+    }
     
-    // HARDCODED
-    let idPersonal: Int = 6
-    
-    // Calcular estadisticas del dia
     var serviciosDelDia: [ServicioHistorial] {
-        let hoy = DateFormatter.shortDate.string(from: Date())
+        let hoy = DateFormatter.fechaCorta.string(from: Date())
         return servicios.filter { $0.fecha == hoy }
     }
 
@@ -143,10 +147,47 @@ struct HistorialView: View {
                                     Text("No hay servicios registrados")
                                         .foregroundStyle(gris4)
                                         .padding()
+                                } else if !verTodos{
+                                    HStack{
+                                        Button("Ver Todos") {
+                                            verTodos.toggle()
+                                        }
+                                        .padding(.leading, 10)
+                                        .foregroundStyle(gris4)
+                                        Spacer()
+                                        DatePicker(
+                                            "Filtrar por Fecha",
+                                            selection: $fechaSeleccionada,
+                                            displayedComponents: .date
+                                        )
+                                        .labelsHidden()
+                                        .datePickerStyle(.compact)
+                                        .foregroundStyle(azul)
+                                    }
+                                    if servicios.isEmpty {
+                                        Text("No hay servicios registrados")
+                                            .foregroundStyle(gris4)
+                                            .padding()
+                                    } else if serviciosFiltrados.isEmpty && !cargando {
+                                        Text("No hay servicios para la fecha seleccionada")
+                                            .foregroundStyle(gris4)
+                                            .padding()
+                                    } else {
+                                        ForEach(serviciosFiltrados) { servicio in
+                                            HistorialRow(servicio: servicio)
+                                        }
+                                    }
                                 } else {
+                                    HStack {
+                                        Spacer()
+                                        Button("Filtrar") {
+                                            verTodos.toggle()
+                                        }
+                                        .padding(.trailing, 10)
+                                        .foregroundStyle(gris4)
+                                    }
                                     ForEach(servicios) { servicio in
                                         HistorialRow(servicio: servicio)
-        
                                     }
                                 }
                             }
@@ -176,7 +217,16 @@ struct HistorialView: View {
         .background(gris2.opacity(0.3))
         .toolbar(.hidden)
         .onAppear() {
+            verTodos = true
             cargarHistorial()
+            Task {
+                if idPersonal == 0 {
+                    let idPersonalGuardado = UserDefaults.standard.integer(forKey: "idworker")
+                    if idPersonal != 0 {
+                        self.idPersonal = idPersonalGuardado
+                    }
+                }
+            }
         }
     }
     
