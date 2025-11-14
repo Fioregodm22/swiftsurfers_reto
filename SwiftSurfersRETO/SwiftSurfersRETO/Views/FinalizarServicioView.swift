@@ -36,6 +36,8 @@ struct FinalizarServicioView: View {
     
     //GET -  datos iniciales del servicio
     func getDetalleInicial() async {
+        //let base = "http://10.14.255.43:10204/hora_km_inicial/\(idDetalle)"
+        
         let base = "http://10.14.255.43:10204/hora_km_inicial/\(idDetalle)"
         
         guard let url = URL(string: base) else {
@@ -100,8 +102,8 @@ struct FinalizarServicioView: View {
         }
         
         
-        //let base = "https://toll-open-undertake-climb.trycloudflare.com/hora_km_final/\(idDetalle)")!"
-        let url = URL(string: "https://toll-open-undertake-climb.trycloudflare.com/hora_km_final/\(idDetalle)")!
+        
+        let url = URL(string: "http://10.14.255.43:10204/hora_km_final/\(idDetalle)")!
         var request = URLRequest(url: url)
         request.httpMethod = "PUT"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")

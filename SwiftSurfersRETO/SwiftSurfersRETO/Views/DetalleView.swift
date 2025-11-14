@@ -326,7 +326,7 @@ struct DetalleView: View {
                     )
                 }
                 .navigationDestination(isPresented: $navegarAIniciar) {
-                    IniciarServicioView(idServicio: servicio.idServicio)
+                    IniciarServicioView(idServicio: servicio.idDetalle)
                 }
             } else if servicio.idEstatus == 2 {
                 Button(action: {
@@ -349,7 +349,7 @@ struct DetalleView: View {
                     )
                 }
                 .navigationDestination(isPresented: $navegarAFinalizar) {
-                    FinalizarServicioView(idDetalle: servicio.idServicio)
+                    FinalizarServicioView(idDetalle: servicio.idDetalle)
                 }
             }
             
