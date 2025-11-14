@@ -53,7 +53,7 @@ struct DetalleView: View {
                         .padding(.horizontal)
                     
                     Button(action: {
-                        dismiss() 
+                        dismiss()
                     }) {
                         HStack(spacing: 12) {
                             Image(systemName: "arrow.left.circle.fill")

@@ -9,6 +9,7 @@ import SwiftUI
 
 
 struct CalendarioView: View {
+    @Environment(\.dismiss) var dismiss
     @State private var mesActual = Date()
     @State private var diaSeleccionado: Int?
     @State private var viajes: [Viaje] = []
@@ -30,10 +31,28 @@ struct CalendarioView: View {
     
     var body: some View {
             VStack{
-                // Header
+                
+                // Header 
                 ZStack(alignment: .topLeading) {
                     Color(red: 1/255, green: 104/255, blue: 138/255)
                         .ignoresSafeArea(edges: .top)
+                    
+                    VStack {
+                        Button(action: {
+                            dismiss()
+                        }) {
+                            HStack(spacing: 8) {
+                                Image(systemName: "chevron.left")
+                                    .font(.system(size: 18, weight: .semibold))
+                                Text("Atrás")
+                                    .font(.system(size: 18))
+                            }
+                            .foregroundColor(.white)
+                            .padding(.leading, 20)
+                            .padding(.top, 1)
+                        }
+                        Spacer()
+                    }
                     
                     HStack(alignment: .center, spacing: 16) {
                         Image("novaLogo1")
@@ -209,7 +228,7 @@ struct CalendarioView: View {
                                     .padding(.horizontal, 20)
                                     .padding(.top, 5)
                                 }
-                                .frame(height: 200)
+                                .frame(height: 140)
                             }
                         }
                     }
@@ -217,6 +236,7 @@ struct CalendarioView: View {
                 
             }
             .background(Color.white)
+            .navigationBarHidden(true) // AÑADIDO: Ocultar la barra de navegación por defecto
             .onAppear {
                 Task {
                     // Para testing rápido: descomenta la línea siguiente y pon el id que quieras
