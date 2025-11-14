@@ -35,11 +35,68 @@ struct DetalleView: View {
             } else if let detalle = detalle {
                 contenidoDetalle(detalle: detalle)
             } else {
-                VStack {
-                    Text("Error al cargar los detalles")
+                VStack(spacing: 20) {
+                    Image(systemName: "exclamationmark.triangle.fill")
+                        .font(.system(size: 60))
                         .foregroundColor(.red)
+                    
+                    Text("Error al cargar los detalles")
+                        .font(.title2)
+                        .foregroundColor(.red)
+                        .bold()
+                    
+                    Text("No se pudieron obtener los datos del servicio")
+                        .font(.body)
+                        .foregroundColor(.gray)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal)
+                    
+                    Button(action: {
+                        dismiss() 
+                    }) {
+                        HStack(spacing: 12) {
+                            Image(systemName: "arrow.left.circle.fill")
+                                .font(.system(size: 20))
+                            
+                            Text("Volver a Agenda")
+                                .font(.system(size: 18))
+                                .bold()
+                        }
+                        .frame(width: 280)
+                        .frame(height: 50)
+                        .foregroundColor(.white)
+                        .background(
+                            RoundedRectangle(cornerRadius: 15)
+                                .fill(azul)
+                        )
+                    }
+                    .padding(.top, 20)
+                    
+                    // Botón secundario para reintentar
+                    Button(action: {
+                        Task {
+                            await cargarDetalle()
+                        }
+                    }) {
+                        HStack(spacing: 12) {
+                            Image(systemName: "arrow.clockwise")
+                                .font(.system(size: 18))
+                            
+                            Text("Reintentar")
+                                .font(.system(size: 16))
+                        }
+                        .frame(width: 280)
+                        .frame(height: 45)
+                        .foregroundColor(azul)
+                        .background(
+                            RoundedRectangle(cornerRadius: 15)
+                                .stroke(azul, lineWidth: 2)
+                        )
+                    }
+                    
                     Spacer()
                 }
+                .padding()
             }
         }
         .toolbar(.hidden, for: .tabBar)
@@ -89,7 +146,7 @@ struct DetalleView: View {
     
     
     func contenidoDetalle(detalle: Detalle) -> some View {
-        VStack(spacing: 15){
+        VStack(spacing: servicio.idEstatus == 3 ? 25 : 15){
             ZStack(alignment: .topLeading){
                 Color(azul)
                     .ignoresSafeArea(edges: .top)
@@ -225,7 +282,7 @@ struct DetalleView: View {
                     Text("ID Medico")
                         .font(.system(size: 18).bold())
                     Spacer()
-                    Text(String(detalle.idMedico))
+                    Text(detalle.idMedico != nil ? String(detalle.idMedico!) : "No asignado")
                         .font(.system(size: 18))
                 }
                 .padding(3)
@@ -235,27 +292,53 @@ struct DetalleView: View {
             .frame(width: 370)
             .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
             
-            Button(action: {
-                navegarAIniciar = true
-            }) {
-                HStack(spacing: 12) {
-                    Image(systemName: "checkmark.circle.fill")
-                        .font(.system(size: 20))
-                    
-                    Text("Iniciar Servicio")
-                        .font(.system(size: 20))
-                        .bold(true)
+            
+            if servicio.idEstatus == 1 {  // Agendado
+                Button(action: {
+                    navegarAIniciar = true
+                }) {
+                    HStack(spacing: 12) {
+                        Image(systemName: "play.circle.fill")
+                            .font(.system(size: 20))
+                        
+                        Text("Iniciar Servicio")
+                            .font(.system(size: 20))
+                            .bold(true)
+                    }
+                    .frame(width: 360)
+                    .frame(height: 60)
+                    .foregroundColor(.white)
+                    .background(
+                        RoundedRectangle(cornerRadius: 20)
+                            .fill(naranja)
+                    )
                 }
-                .frame(width: 360)
-                .frame(height: 60)
-                .foregroundColor(.white)
-                .background(
-                    RoundedRectangle(cornerRadius: 20)
-                        .fill(naranja)
-                )
-            }
-            .navigationDestination(isPresented: $navegarAIniciar) {
-                IniciarServicioView()
+                .navigationDestination(isPresented: $navegarAIniciar) {
+                    IniciarServicioView()
+                }
+            } else if servicio.idEstatus == 2 {
+                Button(action: {
+                    navegarAIniciar = true
+                }) {
+                    HStack(spacing: 12) {
+                        Image(systemName: "stop.circle.fill")
+                            .font(.system(size: 20))
+                        
+                        Text("Finalizar Servicio")
+                            .font(.system(size: 20))
+                            .bold(true)
+                    }
+                    .frame(width: 360)
+                    .frame(height: 60)
+                    .foregroundColor(.white)
+                    .background(
+                        RoundedRectangle(cornerRadius: 20)
+                            .fill(azul)
+                    )
+                }
+                .navigationDestination(isPresented: $navegarAIniciar) {
+                    IniciarServicioView()
+                }
             }
             
             Spacer()

@@ -46,7 +46,7 @@ struct Detalle: Codable {
     var horaInicio: String
     var idAmbulancia: Int
     var idDetalle: Int
-    var idMedico: Int
+    var idMedico: Int?             
     var idMedicoSeguro: String
     var idServicio: Int
     var kmFinal: Int?
@@ -59,7 +59,6 @@ struct Detalle: Codable {
     var tiempoTotal: Int?
     var tipoAmbulancia: String
 }
-
 
 struct Servicio: Codable {
     var apellidoMaternoSocio: String
