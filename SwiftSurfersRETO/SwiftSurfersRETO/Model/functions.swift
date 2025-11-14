@@ -56,5 +56,3 @@ func obtenerDetalle(idServicio: Int) async throws -> Detalle {
     return primerDetalle
 }
 
-
-
