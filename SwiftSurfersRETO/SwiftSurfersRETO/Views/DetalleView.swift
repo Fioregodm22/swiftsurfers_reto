@@ -293,7 +293,7 @@ struct DetalleView: View {
             .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
             
             
-            if servicio.idEstatus == 1 {  // Agendado
+            if servicio.idEstatus == 1 {  
                 Button(action: {
                     navegarAIniciar = true
                 }) {
