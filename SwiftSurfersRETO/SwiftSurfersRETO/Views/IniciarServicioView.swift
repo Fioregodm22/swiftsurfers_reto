@@ -8,8 +8,7 @@
 import SwiftUI
 
 struct IniciarServicioView: View {
-    // HARD CODED POR EL MOMENTO
-    @State public var idServicio: Int = 11
+    @State public var idServicio: Int
     
     
     @Environment(\.dismiss) var dismiss
@@ -55,7 +54,7 @@ struct IniciarServicioView: View {
                             .foregroundStyle(Color.white)
                             .bold()
                             .font(.system(size: 25))
-                        Text ("# ID: 001")
+                        Text ("# ID: \(idServicio)")
                             .padding(.leading, 5)
                             .foregroundStyle(Color.white)
                             .font(.system(size: 20))
@@ -149,7 +148,7 @@ struct IniciarServicioView: View {
                                     kmInicio: kmInicial!
                                 )
                                 
-                                try await api.actualizarEstatus(idServicio: 11, idEstatus: 2)
+                                try await api.actualizarEstatus(idServicio: idServicio, idEstatus: 2)
                                 
                                 print("Servicio iniciado con éxito.")
                                 
@@ -194,10 +193,6 @@ struct IniciarServicioView: View {
                     .foregroundStyle(.white)
                     .background(RoundedRectangle(cornerRadius: 20).fill(Color(gris4)))
                     .bold(true)
-                    //.navigationDestination(isPresented: $navegarADetalle) {
-                     //   dismiss()
-
-                    
             }
             .padding(.top, 60)
         }
@@ -210,6 +205,6 @@ struct IniciarServicioView: View {
 
 #Preview {
     NavigationStack {
-        IniciarServicioView()
+        IniciarServicioView(idServicio: 5)
     }
 }

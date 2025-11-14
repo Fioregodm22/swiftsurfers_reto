@@ -314,10 +314,11 @@ struct DetalleView: View {
                     )
                 }
                 .navigationDestination(isPresented: $navegarAIniciar) {
-                    IniciarServicioView()
+                    IniciarServicioView(idServicio: servicio.idServicio)
                 }
             } else if servicio.idEstatus == 2 {
                 Button(action: {
+                    
                     navegarAIniciar = true
                 }) {
                     HStack(spacing: 12) {
@@ -337,7 +338,7 @@ struct DetalleView: View {
                     )
                 }
                 .navigationDestination(isPresented: $navegarAIniciar) {
-                    IniciarServicioView()
+                    IniciarServicioView(idServicio: servicio.idServicio)
                 }
             }
             
