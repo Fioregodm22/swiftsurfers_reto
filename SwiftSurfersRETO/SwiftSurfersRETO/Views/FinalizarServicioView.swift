@@ -19,6 +19,7 @@ struct FinalizarServicioView: View {
     @State private var successMessage: Bool = false
     @State private var isLoading: Bool = false
     @State private var navegarAServicioFinalizado = false
+    @State private var shouldDismissToRoot = false
     
     @Environment(\.dismiss) var dismiss
     
@@ -378,17 +379,16 @@ struct FinalizarServicioView: View {
                     }
                 }) {
                     Text("FINALIZAR")
+                        .font(.system(size: 20))
+                        .bold(true)
                 }
-                .padding(.top, 20)
-                .padding(.bottom, 20)
-                .padding(.horizontal, 110)
+                .frame(width: 300)
+                .frame(height: 60)
                 .foregroundStyle(.white)
                 .background(RoundedRectangle(cornerRadius: 20).fill(Color(azul)))
                 .bold(true)
-                .disabled(isLoading)
                 .navigationDestination(isPresented: $navegarAServicioFinalizado) {
-                    ServicioFinalizado()
-                        .navigationBarBackButtonHidden(true)
+                    ServicioFinalizado(shouldDismissToRoot: $shouldDismissToRoot)
                 }
                 .alert("Error", isPresented: $errorKMFinal) {
                     Button("Aceptar") {}
@@ -396,22 +396,34 @@ struct FinalizarServicioView: View {
                     Text("Debes ingresar un kilometraje válido mayor al kilometraje inicial")
                 }
                 
+                Spacer()
+                    .frame(height: 40)
+                
                 Button(action: {
                     dismiss()
                 }) {
                     Text("CANCELAR")
+                        .font(.system(size: 20))
+                        .bold(true)
                 }
-                .padding(.top, 20)
-                .padding(.bottom, 20)
-                .padding(.horizontal, 110)
+                .frame(width: 300)
+                .frame(height: 60)
                 .foregroundStyle(.white)
                 .background(RoundedRectangle(cornerRadius: 20).fill(Color(gris4)))
                 .bold(true)
-                
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .background(gris2.opacity(0.3))
+        .toolbar(.hidden)
+        .onChange(of: shouldDismissToRoot) { oldValue, newValue in
+            if newValue {
+                dismiss()
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    dismiss()
+                }
+            }
+        }
         .navigationBarHidden(true)
         .onAppear {
             Task {
