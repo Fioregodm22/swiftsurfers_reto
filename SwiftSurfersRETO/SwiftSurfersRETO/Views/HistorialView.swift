@@ -7,8 +7,46 @@
 
 import SwiftUI
 
+extension DateFormatter {
+    static let fechaCorta: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        return formatter
+    }()
+}
+
 struct HistorialView: View {
     
+    @State private var servicios: [ServicioHistorial] = []
+    @State private var cargando: Bool = false
+    @State private var verTodos: Bool = true
+    @State private var fechaSeleccionada: Date = Date()
+    @State var idPersonal: Int = 0
+ 
+    var serviciosFiltrados: [ServicioHistorial] {
+        let fechaFiltro = DateFormatter.fechaCorta.string(from: fechaSeleccionada)
+        return servicios.filter { $0.fecha == fechaFiltro }
+    }
+    
+    var serviciosDelDia: [ServicioHistorial] {
+        let hoy = DateFormatter.fechaCorta.string(from: Date())
+        return servicios.filter { $0.fecha == hoy }
+    }
+
+    var totalKmHoy: Int {
+        serviciosDelDia.compactMap { $0.kmTotales }.reduce(0, +)
+    }
+
+    var totalTiempoHoy: Int {
+        serviciosDelDia.compactMap { $0.tiempoTotal }.reduce(0, +)
+    }
+
+    var totalServiciosHoy: Int {
+        serviciosDelDia.count
+    }
+    
+    
+    // Colores
     let gris1 = Color(red: 242/255.0, green: 242/255.0, blue: 242/255.0)
     let gris2 = Color(red: 211/255.0, green: 211/255.0, blue: 211/255.0)
     let gris3 = Color(red: 153/255.0, green: 153/255.0, blue: 153/255.0)
@@ -50,10 +88,10 @@ struct HistorialView: View {
                     RoundedRectangle(cornerRadius: 20)
                         .fill(Color(blancoClaro))
                         .frame(width: 350, height: 100)
-
+                    
                     HStack (spacing: 30) {
                         VStack(spacing: 4) {
-                            Text("560 km")
+                            Text("\(totalKmHoy) km")
                                 .font(.system(size: 20))
                                 .bold(true)
                                 .foregroundStyle(azul)
@@ -62,7 +100,7 @@ struct HistorialView: View {
                                 .foregroundStyle(gris4)
                         }
                         VStack(spacing: 4) {
-                            Text("4:12 hrs")
+                            Text("\(totalTiempoHoy) hrs")
                                 .font(.system(size: 20))
                                 .bold(true)
                                 .foregroundStyle(azul)
@@ -71,7 +109,7 @@ struct HistorialView: View {
                                 .foregroundStyle(gris4)
                         }
                         VStack(spacing: 4) {
-                            Text("5")
+                            Text("\(totalServiciosHoy)")
                                 .font(.system(size: 20))
                                 .bold(true)
                                 .foregroundStyle(azul)
@@ -83,7 +121,7 @@ struct HistorialView: View {
                     .padding(.top, 30)
                     .padding(.leading, 30)
                     .padding(.trailing, 30)
-
+                    
                     Text("HOY")
                         .font(.system(size: 20))
                         .padding(.horizontal, 40)
@@ -102,16 +140,65 @@ struct HistorialView: View {
                         RoundedRectangle(cornerRadius: 20)
                             .fill(Color(blancoClaro))
                             .frame(width: 350, height: 450)
-                      
+                        
                         ScrollView {
                             VStack (alignment: .leading, spacing: 16) {
-                                HistorialRow(servicio: .ejemplo)
+                                if servicios.isEmpty {
+                                    Text("No hay servicios registrados")
+                                        .foregroundStyle(gris4)
+                                        .padding()
+                                } else if !verTodos{
+                                    HStack{
+                                        Button("Ver Todos") {
+                                            verTodos.toggle()
+                                        }
+                                        .padding(.leading, 10)
+                                        .foregroundStyle(gris4)
+                                        Spacer()
+                                        DatePicker(
+                                            "Filtrar por Fecha",
+                                            selection: $fechaSeleccionada,
+                                            displayedComponents: .date
+                                        )
+                                        .labelsHidden()
+                                        .datePickerStyle(.compact)
+                                        .foregroundStyle(azul)
+                                    }
+                                    if servicios.isEmpty {
+                                        Text("No hay servicios registrados")
+                                            .foregroundStyle(gris4)
+                                            .padding()
+                                    } else if serviciosFiltrados.isEmpty && !cargando {
+                                        Text("No hay servicios para la fecha seleccionada")
+                                            .foregroundStyle(gris4)
+                                            .padding()
+                                    } else {
+                                        ForEach(serviciosFiltrados) { servicio in
+                                            HistorialRow(servicio: servicio)
+                                        }
+                                    }
+                                } else {
+                                    HStack {
+                                        Spacer()
+                                        Button("Filtrar") {
+                                            verTodos.toggle()
+                                        }
+                                        .padding(.trailing, 10)
+                                        .foregroundStyle(gris4)
+                                    }
+                                    ForEach(servicios) { servicio in
+                                        HistorialRow(servicio: servicio)
+                                    }
+                                }
                             }
                             .padding(.top, 30)
                             .padding(.leading, 30)
                             .padding(.trailing, 30)
                         }
-
+                        .refreshable {
+                            cargarHistorial()
+                        }
+                        
                         Text("TODA TU ACTIVIDAD")
                             .font(.system(size: 20))
                             .padding(.horizontal, 40)
@@ -129,6 +216,37 @@ struct HistorialView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .background(gris2.opacity(0.3))
         .toolbar(.hidden)
+        .onAppear() {
+            verTodos = true
+            cargarHistorial()
+            Task {
+                if idPersonal == 0 {
+                    let idPersonalGuardado = UserDefaults.standard.integer(forKey: "idworker")
+                    if idPersonal != 0 {
+                        self.idPersonal = idPersonalGuardado
+                    }
+                }
+            }
+        }
+    }
+    
+    func cargarHistorial() {
+        Task {
+            do {
+                self.cargando = true
+                let servicios = try await AleAPI.shared.getHistorialParamedico(idPersonal: idPersonal)
+                DispatchQueue.main.async {
+                    self.servicios = servicios
+                    self.cargando = false
+                    print("Servicios cargados: \(servicios.count)")
+                }
+            } catch {
+                DispatchQueue.main.async {
+                    self.cargando = false
+                    print("Error cargando los servicios: \(error)")
+                }
+            }
+        }
     }
 }
 

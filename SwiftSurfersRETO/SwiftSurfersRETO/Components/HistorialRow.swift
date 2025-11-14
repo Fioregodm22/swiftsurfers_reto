@@ -8,11 +8,29 @@
 import SwiftUI
 
 struct HistorialRow: View {
-    let servicio: Servicio
+    let servicio: ServicioHistorial
     
-    var estado: EstadoServicio {
-        EstadoServicio(id: servicio.idEstatus)
+    var estatus: String {
+        servicio.estatusDescripcion!
     }
+    
+    var color: Color {
+        switch estatus {
+        case "Agendado":
+            return .gray
+            
+        case "En Proceso":
+            return Color(red: 1/255, green: 104/255, blue: 138/255)
+            
+        case "Completado":
+            return Color(red: 255/255, green: 153/255, blue: 0/255)
+            
+        default:
+            return .black
+        }
+    }
+
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             
@@ -26,18 +44,18 @@ struct HistorialRow: View {
                 VStack(alignment: .leading) {
                     Text("Fecha")
                         .font(.system(size: 18)).bold()
-                    Text("30/10/2025")
+                    Text(servicio.fecha)
                         .font(.system(size: 16))
                 }
                 
                 Spacer()
                 
-                Text(estado.nombre)
+                Text(servicio.estatusDescripcion!)
                     .font(.caption.weight(.semibold))
                     .padding(.vertical, 6)
                     .padding(.horizontal, 10)
-                    .background(estado.color.opacity(0.15))
-                    .foregroundStyle(estado.color)
+                    .background(color.opacity(0.15))
+                    .foregroundStyle(color)
                     .clipShape(Capsule())
             }
             
@@ -51,7 +69,7 @@ struct HistorialRow: View {
                 VStack(alignment: .leading) {
                     Text("Tipo de Viaje")
                         .font(.system(size: 18)).bold()
-                    Text("Redondo")
+                    Text(servicio.tipoServicio!)
                         .font(.system(size: 16))
                 }
                 Spacer()
@@ -67,7 +85,7 @@ struct HistorialRow: View {
                 VStack(alignment: .leading) {
                     Text("ID Paciente")
                         .font(.system(size: 18)).bold()
-                    Text("1234")
+                    Text(String(servicio.idNumeroSocio))
                         .font(.system(size: 16))
                 }
                 Spacer()
@@ -80,5 +98,19 @@ struct HistorialRow: View {
 }
 
 #Preview {
-    HistorialRow(servicio: .ejemplo)
+    HistorialRow(servicio: ServicioHistorial(
+        idServicio: 101,
+        idNumeroSocio: 202345,
+        fecha: "2025-11-13",
+        hora: "14:30",
+        origen: "Av. Reforma 123, Ciudad de México",
+        destino: "Aeropuerto Internacional CDMX",
+        tipoServicio: "Traslado Ejecutivo",
+        nombreAsociado: "Carlos Ramírez",
+        estatusDescripcion: "Completado",
+        estatusColor: ".gray",
+        tiempoTotal: 45,
+        kmTotales: 23,
+        placas: "ABC-1234"
+    ))
 }
