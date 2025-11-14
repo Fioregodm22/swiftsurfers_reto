@@ -150,7 +150,7 @@ struct AgendaView: View {
         isLoading = true
         
         do {
-            let idPersonal = 5
+            let idPersonal = UserDefaults.standard.integer(forKey: "idworker")
             servicios = try await obtenerServicios(idPersonal: idPersonal)
         } catch {
             print("Error al cargar servicios: \(error.localizedDescription)")

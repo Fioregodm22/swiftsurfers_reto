@@ -7,7 +7,7 @@ struct ContentView: View {
     var body: some View {
         ZStack(alignment: .bottom) {
             TabView(selection: $tabSelection) {
-                CalendarioView().tag(1)
+                HistorialView().tag(1)
                 
                 NavigationStack {
                     AgendaView(hideTabBar: $hideTabBar)

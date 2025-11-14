@@ -8,6 +8,9 @@
 import SwiftUI
 
 struct IniciarServicioView: View {
+    @State public var idServicio: Int
+    
+    
     @Environment(\.dismiss) var dismiss
     @State private var navegarADetalle = false
     @State private var navegarAConfirmarInicio = false
@@ -51,7 +54,7 @@ struct IniciarServicioView: View {
                             .foregroundStyle(Color.white)
                             .bold()
                             .font(.system(size: 25))
-                        Text ("# ID: 001")
+                        Text ("# ID: \(idServicio)")
                             .padding(.leading, 5)
                             .foregroundStyle(Color.white)
                             .font(.system(size: 20))
@@ -135,8 +138,27 @@ struct IniciarServicioView: View {
                         errorKMInicial.toggle()
                     }
                     else {
-                        horaInicio = Date()
-                        navegarAConfirmarInicio = true
+
+                        Task {
+                            do {
+                                let api = AleAPI()
+
+                                try await api.iniciarServicio(
+                                    idServicio: idServicio,
+                                    kmInicio: kmInicial!
+                                )
+                                
+                                try await api.actualizarEstatus(idServicio: idServicio, idEstatus: 2)
+                                
+                                print("Servicio iniciado con éxito.")
+                                
+                                horaInicio = Date()
+                                navegarAConfirmarInicio = true
+                                
+                            } catch {
+                                print("Error al iniciar servicio")
+                            }
+                        }
                     }
                 }) {
                     Text("INICIAR")
@@ -171,10 +193,6 @@ struct IniciarServicioView: View {
                     .foregroundStyle(.white)
                     .background(RoundedRectangle(cornerRadius: 20).fill(Color(gris4)))
                     .bold(true)
-                    //.navigationDestination(isPresented: $navegarADetalle) {
-                     //   dismiss()
-
-                    
             }
             .padding(.top, 60)
         }
@@ -187,6 +205,6 @@ struct IniciarServicioView: View {
 
 #Preview {
     NavigationStack {
-        IniciarServicioView()
+        IniciarServicioView(idServicio: 5)
     }
 }
