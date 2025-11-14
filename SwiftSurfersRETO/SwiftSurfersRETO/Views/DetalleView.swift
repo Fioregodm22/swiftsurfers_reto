@@ -318,6 +318,7 @@ struct DetalleView: View {
                 }
             } else if servicio.idEstatus == 2 {
                 Button(action: {
+                    
                     navegarAIniciar = true
                 }) {
                     HStack(spacing: 12) {

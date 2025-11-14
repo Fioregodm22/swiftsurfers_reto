@@ -57,18 +57,19 @@ struct HistorialView: View {
     
     var body: some View {
         VStack{
-            ZStack(alignment: .topLeading){
-                Color(azul)
+            
+            ZStack(alignment: .topLeading) {
+                Color(red: 1/255, green: 104/255, blue: 138/255)
                     .ignoresSafeArea(edges: .top)
-                HStack (alignment: .center, spacing: 14) {
+                
+                HStack(alignment: .center, spacing: 16) {
                     Image("novaLogo1")
                         .resizable(resizingMode: .stretch)
                         .aspectRatio(contentMode: .fit)
-                        .frame(width:80)
-                        .padding(.top, 8)
+                        .frame(width: 80)
                         .padding(.leading, 20)
                     
-                    VStack (alignment: .leading, spacing: 8) {
+                    VStack(alignment: .leading, spacing: 8) {
                         Text("Historial de Servicios")
                             .padding(.top, 15)
                             .padding(.leading, 5)
@@ -81,7 +82,7 @@ struct HistorialView: View {
             }
             .frame(maxWidth: .infinity)
             .frame(height: 120)
-            .padding(.bottom, 40)
+            .padding(.bottom, 10)
             
             VStack {
                 ZStack(alignment: .top) {
