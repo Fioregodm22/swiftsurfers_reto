@@ -9,6 +9,7 @@ import SwiftUI
 
 struct ServicioIniciado: View {
     @State private var navegarADetalle = false
+    @Environment(\.dismiss) var dismiss
     
     var body: some View {
         VStack{
@@ -31,7 +32,9 @@ struct ServicioIniciado: View {
                     .padding(.top, -210)
                 
                 Button(action: {
-                    navegarADetalle = true
+                    dismiss()
+                    
+                    
                 }){
                     Text("ACEPTAR")
                         .font(.system(size: 20))
@@ -45,9 +48,6 @@ struct ServicioIniciado: View {
                 .foregroundStyle(Color.white)
                 .cornerRadius(20)
                 .padding(.top, 300)
-                .navigationDestination(isPresented: $navegarADetalle) {
-                    ContentView()
-                }
             }
             .ignoresSafeArea(edges: .all)
             .toolbar(.hidden)
