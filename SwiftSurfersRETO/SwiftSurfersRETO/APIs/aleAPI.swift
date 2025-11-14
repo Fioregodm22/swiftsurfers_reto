@@ -31,28 +31,6 @@ class AleAPI {
         }
         return try JSONDecoder().decode([ServicioHistorial].self, from: data)
     }
-    
-    func crearServicio(request: CrearServicioRequest) async throws -> CrearServicioResponse {
-        let url = URL(string: "\(baseURL)/crearServicio")!
-        var urlRequest = URLRequest(url: url)
-        urlRequest.httpMethod = "POST"
-        urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        urlRequest.httpBody = try JSONEncoder().encode(request)
-        
-        let (data, response) = try await URLSession.shared.data(for: urlRequest)
-        
-        guard let httpResponse = response as? HTTPURLResponse,
-              httpResponse.statusCode == 201 else {
-            throw APIError.invalidResponse
-        }
-        
-        let apiResponse = try JSONDecoder().decode(APIResponseAle<CrearServicioResponse>.self, from: data)
-        guard let responseData = apiResponse.data else {
-            throw APIError.noData
-        }
-        
-        return responseData
-    }
 
     func iniciarServicio(idServicio: Int, kmInicio: Int) async throws -> IniciarServicioResponse {
         let url = URL(string: "\(baseURL)/iniciarServicio/\(idServicio)")!
