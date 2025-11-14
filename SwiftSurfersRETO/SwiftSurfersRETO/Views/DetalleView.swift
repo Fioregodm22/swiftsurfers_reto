@@ -349,7 +349,7 @@ struct DetalleView: View {
                     )
                 }
                 .navigationDestination(isPresented: $navegarAFinalizar) {
-                    FinalizarServicioView()
+                    FinalizarServicioView(idDetalle: servicio.idServicio)
                 }
             }
             
