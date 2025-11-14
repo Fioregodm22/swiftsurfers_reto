@@ -9,7 +9,8 @@ import SwiftUI
 
 struct FinalizarServicioView: View {
     
-    @State public var idDetalle: Int =  9 // ID del detalle a finalizar
+    @State public var idDetalle: Int // ID del detalle a finalizar
+    
     @State public var detalleInicial: GetInicio? = nil
     @State public var kmFinal: Double? = nil
     @State public var distanciaRecorrida: Double? = nil
@@ -17,6 +18,9 @@ struct FinalizarServicioView: View {
     @State private var errorMessage: String? = nil
     @State private var successMessage: Bool = false
     @State private var isLoading: Bool = false
+    @State private var navegarAServicioFinalizado = false
+    
+    @Environment(\.dismiss) var dismiss
     
     @State var calendario = Calendar.current
     @State var horaActual = Date()
@@ -95,7 +99,9 @@ struct FinalizarServicioView: View {
             self.isLoading = true
         }
         
-        let url = URL(string: "http://10.14.255.43:10204/hora_km_final/\(idDetalle)")!
+        
+        //let base = "https://toll-open-undertake-climb.trycloudflare.com/hora_km_final/\(idDetalle)")!"
+        let url = URL(string: "https://toll-open-undertake-climb.trycloudflare.com/hora_km_final/\(idDetalle)")!
         var request = URLRequest(url: url)
         request.httpMethod = "PUT"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -137,8 +143,8 @@ struct FinalizarServicioView: View {
             
             DispatchQueue.main.async {
                 self.errorMessage = nil
-                self.successMessage = true
                 self.isLoading = false
+                self.navegarAServicioFinalizado = true
                 print("Servicio finalizado exitosamente: \(decodedResponse)")
             }
             
@@ -331,6 +337,7 @@ struct FinalizarServicioView: View {
                                 Spacer()
                             }
                             .padding(.top, 30)
+                    
                         }
                         Spacer()
                     }
@@ -359,10 +366,16 @@ struct FinalizarServicioView: View {
             
             // BOTONES
             VStack {
-                Button("FINALIZAR") {
-                    Task {
-                        await finalizarServicio()
+                Button(action: {
+                    if kmFinal == nil {
+                        errorKMFinal = true
+                    } else {
+                        Task {
+                            await finalizarServicio()
+                        }
                     }
+                }) {
+                    Text("FINALIZAR")
                 }
                 .padding(.top, 20)
                 .padding(.bottom, 20)
@@ -371,19 +384,20 @@ struct FinalizarServicioView: View {
                 .background(RoundedRectangle(cornerRadius: 20).fill(Color(azul)))
                 .bold(true)
                 .disabled(isLoading)
+                .navigationDestination(isPresented: $navegarAServicioFinalizado) {
+                    ServicioFinalizado()
+                        .navigationBarBackButtonHidden(true)
+                }
                 .alert("Error", isPresented: $errorKMFinal) {
                     Button("Aceptar") {}
                 } message: {
                     Text("Debes ingresar un kilometraje válido mayor al kilometraje inicial")
                 }
-                .alert("Éxito", isPresented: $successMessage) {
-                    Button("Aceptar") {}
-                } message: {
-                    Text("Servicio finalizado correctamente")
-                }
                 
-                Button("CANCELAR") {
-                    // Acción de cancelar
+                Button(action: {
+                    dismiss()
+                }) {
+                    Text("CANCELAR")
                 }
                 .padding(.top, 20)
                 .padding(.bottom, 20)
@@ -391,11 +405,12 @@ struct FinalizarServicioView: View {
                 .foregroundStyle(.white)
                 .background(RoundedRectangle(cornerRadius: 20).fill(Color(gris4)))
                 .bold(true)
-                .disabled(isLoading)
+                
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .background(gris2.opacity(0.3))
+        .navigationBarHidden(true)
         .onAppear {
             Task {
                 await getDetalleInicial()
@@ -405,5 +420,5 @@ struct FinalizarServicioView: View {
 }
 
 #Preview {
-    FinalizarServicioView()
+    FinalizarServicioView(idDetalle: 9)
 }
