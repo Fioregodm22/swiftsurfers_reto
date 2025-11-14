@@ -73,7 +73,6 @@ struct Servicio: Codable {
     var nombreSocio: String
     var origen: String
     var tipoServicio: String
-    var idDetalle: Int
 }
 
 
@@ -91,7 +90,6 @@ extension Servicio {
         nombreSocio: "Juan",
         origen: "Hospital Central",
         tipoServicio: "Sencillo",
-        idDetalle: 1
     )
 }
 
@@ -109,7 +107,6 @@ extension Servicio {
         nombreSocio: "María",
         origen: "Hospital Zambrano",
         tipoServicio: "Urgente",
-        idDetalle: 2
     )
 }
 

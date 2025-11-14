@@ -220,18 +220,11 @@ struct HistorialView: View {
         .onAppear() {
             verTodos = true
             cargarHistorial()
-            Task {
-                if idPersonal == 0 {
-                    let idPersonalGuardado = UserDefaults.standard.integer(forKey: "idworker")
-                    if idPersonal != 0 {
-                        self.idPersonal = idPersonalGuardado
-                    }
-                }
-            }
         }
     }
     
     func cargarHistorial() {
+        let idPersonal = UserDefaults.standard.integer(forKey: "idworker")
         Task {
             do {
                 self.cargando = true
