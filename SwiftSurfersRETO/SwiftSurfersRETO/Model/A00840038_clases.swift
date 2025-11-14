@@ -19,7 +19,7 @@ struct Viaje: Identifiable {
 
 struct ViajeData: Decodable, Identifiable {
     let idServicio: Int
-    let kmFinal: Double?
+    let kmTotales: Double?
     let fecha: String
     let estatus: String?
     
