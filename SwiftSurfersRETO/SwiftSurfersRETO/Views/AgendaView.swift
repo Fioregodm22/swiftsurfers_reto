@@ -155,8 +155,8 @@ struct AgendaView: View {
         .navigationBarHidden(true)
 
         .navigationDestination(isPresented: $navegarACalendario) {
-            CalendarioView()
-        }
+                    CalendarioView(idworker: UserDefaults.standard.integer(forKey: "idworker"))
+                }
         .onAppear {
             Task {
                 await cargarServicios()
