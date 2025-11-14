@@ -9,7 +9,8 @@ import SwiftUI
 
 struct FinalizarServicioView: View {
     
-    @State public var idDetalle: Int =  9 // ID del detalle a finalizar
+    @State public var idDetalle: Int // ID del detalle a finalizar
+    
     @State public var detalleInicial: GetInicio? = nil
     @State public var kmFinal: Double? = nil
     @State public var distanciaRecorrida: Double? = nil
@@ -98,7 +99,9 @@ struct FinalizarServicioView: View {
             self.isLoading = true
         }
         
-        let url = URL(string: "http://10.14.255.43:10204/hora_km_final/\(idDetalle)")!
+        
+        //let base = "https://toll-open-undertake-climb.trycloudflare.com/hora_km_final/\(idDetalle)")!"
+        let url = URL(string: "https://toll-open-undertake-climb.trycloudflare.com/hora_km_final/\(idDetalle)")!
         var request = URLRequest(url: url)
         request.httpMethod = "PUT"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -383,6 +386,7 @@ struct FinalizarServicioView: View {
                 .disabled(isLoading)
                 .navigationDestination(isPresented: $navegarAServicioFinalizado) {
                     ServicioFinalizado()
+                        .navigationBarBackButtonHidden(true)
                 }
                 .alert("Error", isPresented: $errorKMFinal) {
                     Button("Aceptar") {}
@@ -406,7 +410,7 @@ struct FinalizarServicioView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .background(gris2.opacity(0.3))
-        .toolbar(.hidden)
+        .navigationBarHidden(true)
         .onAppear {
             Task {
                 await getDetalleInicial()
@@ -416,5 +420,5 @@ struct FinalizarServicioView: View {
 }
 
 #Preview {
-    FinalizarServicioView()
+    FinalizarServicioView(idDetalle: 9)
 }
