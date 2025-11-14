@@ -1,6 +1,7 @@
 
 import Foundation
 import SwiftUI
+import CoreLocation
 
 func abrirGoogleMaps(latitud: Double, longitud: Double) {
     let urlString = "https://www.google.com/maps?q=\(latitud),\(longitud)"
@@ -56,3 +57,10 @@ func obtenerDetalle(idServicio: Int) async throws -> Detalle {
     return primerDetalle
 }
 
+func calcularLatitudMedia(latitudOrigen: Double, latitudDestino: Double) -> Double {
+    return (latitudOrigen + latitudDestino) / 2.0
+}
+
+func calcularLongitudMedia(longitudOrigen: Double, longitudDestino: Double) -> Double {
+    return (longitudOrigen + longitudDestino) / 2.0
+}
