@@ -49,7 +49,7 @@ struct CalendarioView: View {
                             }
                             .foregroundColor(.white)
                             .padding(.leading, 20)
-                            .padding(.top, 1)
+                            .padding(.top, 10)
                         }
                         Spacer()
                     }
@@ -68,7 +68,7 @@ struct CalendarioView: View {
                         
                         Spacer()
                     }
-                    .padding(.top, 5)
+                    .padding(.top, 30)
                 }
                 .frame(maxWidth: .infinity)
                 .frame(height: 120)
