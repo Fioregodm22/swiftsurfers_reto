@@ -25,7 +25,7 @@ struct ContentView: View {
         }
     }
 }
-// -chava agregue el preview wrapper como login esta en un navigation separado no se podria conectar desde el preview de content view osea irrelevante para simulador, pero evita tener que hacer login en loginview
+// -chava agregue el preview wrapper, como login esta en un navigation separado no se podria conectar desde el preview de content view osea irrelevante para simulador, pero evita tener que hacer login en loginview
 #Preview {
     PreviewWrapper()
 }
