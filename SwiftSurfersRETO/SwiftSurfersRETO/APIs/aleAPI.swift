@@ -19,7 +19,7 @@ struct ErrorResponse: Codable {
 
 class AleAPI {
     static let shared = AleAPI()
-    private let baseURL = "http://10.14.255.43:10203"
+    private let baseURL = "https://toll-open-undertake-climb.trycloudflare.com"
     
     func getHistorialParamedico(idPersonal: Int) async throws -> [ServicioHistorial] {
         let url = URL(string: "\(baseURL)/historialServicios/paramedico/\(idPersonal)")!
