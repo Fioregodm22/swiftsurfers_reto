@@ -449,5 +449,5 @@ struct ViajeRow: View {
 }
 
 #Preview {
-    CalendarioView()
+    CalendarioView(idworker: 5)
 }

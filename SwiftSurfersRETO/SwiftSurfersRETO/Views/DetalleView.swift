@@ -212,8 +212,7 @@ struct DetalleView: View {
                         longitudOrigen: detalle.longitudOrigen,
                         longitudDestino: detalle.longitudDestino
                     ),
-                    customMark: marcadorList,
-                    showPosicion: true
+                    customMark: marcadorList
                 )
                     .frame(height: 200)
                     .clipped()
