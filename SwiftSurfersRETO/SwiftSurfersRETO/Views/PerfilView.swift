@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct PerfilView: View {
-    @State private var showingLoginScreen = false
+    @Binding var isLoggedIn: Bool  // NUEVO: Recibe binding para controlar el login
     @State public var idworker : Int? = nil
     @State public var userData : UserData = usuarioprueba
     @State private var textjornada: String = "Iniciar jornada"
@@ -16,6 +16,8 @@ struct PerfilView: View {
     @State private var errorMessage: String? = nil
     @State private var terminarjornada : Bool = false
     @State public var alertemerg = false
+    @State private var showLogoutAlert = false  // NUEVO: Para confirmar cierre de sesión
+    
     func getUser() async {
         if idworker == nil {
             return
@@ -166,9 +168,20 @@ struct PerfilView: View {
         }
     }
     
+    // NUEVA: Función para cerrar sesión
+    func cerrarSesion() {
+        // Limpiar UserDefaults
+        UserDefaults.standard.removeObject(forKey: "idworker")
+        
+        // Cambiar estado de login
+        withAnimation {
+            isLoggedIn = false
+        }
+    }
+    
     var body: some View {
-        NavigationStack{
-            VStack{
+        // REMOVIDO: NavigationStack porque ya está en ContentView (TabView)
+        VStack{
                 EncabezadoView(mensaje: "Perfil")
                 Text("¡Hola, \(userData.nombre)!")
                     .foregroundStyle(Color(red: 102/255, green: 102/255, blue: 102/255))
@@ -253,13 +266,10 @@ struct PerfilView: View {
                 }
                 .padding(.bottom, 10)
                 
-                
+                // CAMBIADO: Ahora usa alert de confirmación
                 Button("CERRAR SESIÓN"){
-                    showingLoginScreen =  true
-                    
+                    showLogoutAlert = true
                 }
-                
-                
                 .frame(width: 239, height: 45)
                 .background(Color(red: 1/255, green: 104/255 ,blue: 138/255))
                 .cornerRadius(20)
@@ -268,9 +278,14 @@ struct PerfilView: View {
                 .bold()
                 .padding(.horizontal, 30)
                 .padding(.bottom, 6)
-                
-                
-                .fullScreenCover(isPresented: $showingLoginScreen) { LoginView() }
+                .alert("Cerrar Sesión", isPresented: $showLogoutAlert) {
+                    Button("Cancelar", role: .cancel) { }
+                    Button("Cerrar Sesión", role: .destructive) {
+                        cerrarSesion()
+                    }
+                } message: {
+                    Text("¿Estás seguro que deseas cerrar sesión?")
+                }
                 
                 Button(action: {
                     alertemerg = true
@@ -297,26 +312,25 @@ struct PerfilView: View {
                 Spacer()
                 
             }
-           
-        }
-        .onAppear(){
-            Task {
-                
-                let savedId = UserDefaults.standard.integer(forKey: "idworker")
-                
-                
-                if savedId != 0 {
-                    self.idworker = savedId
+            .onAppear(){
+                Task {
+                    
+                    let savedId = UserDefaults.standard.integer(forKey: "idworker")
+                    
+                    
+                    if savedId != 0 {
+                        self.idworker = savedId
+                    }
+                    
+                    
+                    await getUser()
                 }
-                
-                
-                await getUser()
             }
         }
     }
-}
+
 
 
 #Preview {
-    PerfilView()
+    PerfilView(isLoggedIn: .constant(true))
 }
