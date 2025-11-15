@@ -207,7 +207,7 @@ struct CalendarioView: View {
                                 .frame(height: 200)
                                 
                             } else if viajesFiltrados.isEmpty {
-                                VStack(spacing: 12) {
+                                VStack(spacing: 20) {
                                     Image(systemName: "car.circle")
                                         .font(.system(size: 40))
                                         .foregroundColor(Color(red: 1/255, green: 104/255, blue: 138/255))
@@ -215,7 +215,7 @@ struct CalendarioView: View {
                                         .font(.system(size: 16))
                                         .foregroundColor(.gray)
                                 }
-                                .frame(height: 200)
+                                .frame(height: 140)
                                 
                             } else {
                                 
