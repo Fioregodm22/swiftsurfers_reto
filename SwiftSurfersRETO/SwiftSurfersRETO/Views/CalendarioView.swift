@@ -92,7 +92,7 @@ struct CalendarioView: View {
                                     .font(.system(size: 22, weight: .bold))
                                     .foregroundColor(.white)
                                 
-                                Text("\(yearActual)")
+                                Text(String(format: "%d", yearActual))
                                     .font(.system(size: 14, weight: .medium))
                                     .foregroundColor(.white.opacity(0.9))
                             }
@@ -171,7 +171,7 @@ struct CalendarioView: View {
                         
                         if let diaSelec = diaSeleccionado {
                             HStack {
-                                Text("Viajes del \(diaSelec) de \(nombreMes()) \(yearActual)")
+                                Text("Viajes del \(diaSelec) de \(nombreMes()) \(String(format: "%d", yearActual))")
                                     .font(.system(size: 16, weight: .semibold))
                                     .foregroundColor(Color(red: 102/255, green: 102/255, blue: 102/255))
                                 Spacer()

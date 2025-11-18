@@ -149,6 +149,7 @@ struct AgendaView: View {
                     }
                     .buttonStyle(.plain)
                     .padding(.vertical, 10)
+                    .padding(.horizontal, 15)
                 }
             }
         }
