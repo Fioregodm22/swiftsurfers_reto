@@ -190,20 +190,6 @@ struct DetalleView: View {
             .frame(height: 120)
             VStack(spacing: 15){
                 
-<<<<<<< Updated upstream
-                MapaView(
-                    latitud: calcularLatitudMedia(
-                        latitudOrigen: detalle.latitudOrigen,
-                        latitudDestino: detalle.latitudDestino
-                    ),
-                    longitud: calcularLongitudMedia(
-                        longitudOrigen: detalle.longitudOrigen,
-                        longitudDestino: detalle.longitudDestino
-                    ),
-                    customMark: marcadorList,
-                    showPosicion: true
-                )
-=======
                 VStack {
                     HStack{
                         Text("Estatus del Servicio")
@@ -229,7 +215,6 @@ struct DetalleView: View {
                         ),
                         customMark: marcadorList
                     )
->>>>>>> Stashed changes
                     .frame(height: 200)
                     .clipped()
                     .onTapGesture {
