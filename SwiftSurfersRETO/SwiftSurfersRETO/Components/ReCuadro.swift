@@ -92,7 +92,7 @@ struct ReCuadro: View {
         .padding(.vertical, 4)
         .padding(.horizontal, 10)
         .background(Color.gray.opacity(0.15))
-        .frame(width: 360, height: 230)
+        .frame(height: 230)
         .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
     }
 }
