@@ -19,12 +19,9 @@ struct CalendarioView: View {
     @State private var showError = false
     @State public var idworker: Int? = nil
     
-    // ID del usuario desde el State
     var idUsuario: Int {
         idworker ?? 0
     }
-    
-    // Año actual del mes seleccionado
     var yearActual: Int {
         Calendar.current.component(.year, from: mesActual)
     }
@@ -75,13 +72,12 @@ struct CalendarioView: View {
                 
                 
                 // Calendario
-                
                 ZStack {
                     Color.white
                         .ignoresSafeArea()
                     
                     VStack(spacing: 16) {
-                        // Meses (Nav)
+                        // Meses
                         HStack(spacing: 12) {
                             Button(action: { cambiarMes(-1) }) {
                                 Image(systemName: "chevron.left")
@@ -115,8 +111,6 @@ struct CalendarioView: View {
                         }
                         .padding(.horizontal, 20)
                         .padding(.top, 20)
-                        
-                        // Botón para ir al mes actual (solo si no estamos en el mes actual)
                         
                         // Grid Calendar
                         ZStack {
@@ -175,7 +169,6 @@ struct CalendarioView: View {
                         
                         Divider().padding(.horizontal, 20)
                         
-                        // Sección de información de fecha seleccionada
                         if let diaSelec = diaSeleccionado {
                             HStack {
                                 Text("Viajes del \(diaSelec) de \(nombreMes()) \(yearActual)")
@@ -191,10 +184,7 @@ struct CalendarioView: View {
                         
                         // Viajes
                         ZStack {
-                            if isLoading {
-                                ProgressView("Cargando viajes...")
-                                    .padding()
-                            } else if diaSeleccionado == nil {
+                            if diaSeleccionado == nil {
                                 VStack(spacing: 12) {
                                     Image(systemName: "calendar")
                                         .font(.system(size: 40))
@@ -236,13 +226,12 @@ struct CalendarioView: View {
                 
             }
             .background(Color.white)
-            .navigationBarHidden(true) // AÑADIDO: Ocultar la barra de navegación por defecto
+            .navigationBarHidden(true)
             .onAppear {
                 Task {
-                    // Para testing rápido: descomenta la línea siguiente y pon el id que quieras
+                    //
                     // self.idworker = 5
                     
-                    // Si no hay id asignado, intenta leerlo de UserDefaults
                     
                     if idworker == nil || idworker == 0 {
                         let savedId = UserDefaults.standard.integer(forKey: "idworker")
@@ -251,7 +240,6 @@ struct CalendarioView: View {
                     
                     await cargarViajesDelMes()
                     
-                    // Auto-seleccionar día actual si estamos en el mes actual
                     let calendar = Calendar.current
                     let hoy = Date()
                     let mesHoy = calendar.component(.month, from: hoy)
@@ -276,7 +264,7 @@ struct CalendarioView: View {
             }
     }
     
-    // MARK: - API Function
+// API
     func cargarViajesDelMes() async {
         guard let id = idworker, id != 0 else {
             errorMessage = "No se encontró ID de usuario"
@@ -318,8 +306,6 @@ struct CalendarioView: View {
             
             let decoder = JSONDecoder()
             let result = try decoder.decode(ViajeAPIResponse.self, from: data)
-            
-            // Convertir los datos del API al formato de Viaje
             let dateFormatter = DateFormatter()
             dateFormatter.locale = Locale(identifier: "en_US_POSIX")
             dateFormatter.dateFormat = "EEE, dd MMM yyyy HH:mm:ss zzz"
