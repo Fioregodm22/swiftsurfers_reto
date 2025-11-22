@@ -472,11 +472,11 @@ struct FinalizarServicioView: View {
                     }
                 }) {
                     Text("FINALIZAR")
-                        .font(.system(size: 18))
+                        .font(.system(size: 25))
                         .bold(true)
                 }
-                .frame(width: 200)
-                .frame(height: 40)
+                .frame(width: 250)
+                .frame(height: 50)
                 .foregroundStyle(.white)
                 .background(RoundedRectangle(cornerRadius: 20).fill(Color(azul)))
                 .padding(.top, -50)
@@ -500,11 +500,11 @@ struct FinalizarServicioView: View {
                     dismiss()
                 }) {
                     Text("CANCELAR")
-                        .font(.system(size: 18))
+                        .font(.system(size: 25))
                         .bold(true)
                 }
-                .frame(width: 200)
-                .frame(height: 40)
+                .frame(width: 250)
+                .frame(height: 50)
                 .foregroundStyle(.white)
                 .background(RoundedRectangle(cornerRadius: 20).fill(Color(gris4)))
             }
