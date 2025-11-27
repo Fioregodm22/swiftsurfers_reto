@@ -13,7 +13,7 @@ struct CustomTabView: View {
     
     let tabBarItems: [(image: String, title: String)] = [
         ("timer", "Home"),
-        ("calendar","Search"),
+        ("house","Search"),
         ("person.circle.fill","Favorites"),
     ]
     

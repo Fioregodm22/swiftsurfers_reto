@@ -43,14 +43,14 @@ struct EstadoServicio {
 
 struct Detalle: Codable {
     var horaFinal: String?
-    var horaInicio: String
+    var horaInicio: String?
     var idAmbulancia: Int
     var idDetalle: Int
-    var idMedico: Int
+    var idMedico: Int?             
     var idMedicoSeguro: String
     var idServicio: Int
     var kmFinal: Int?
-    var kmInicio: Int
+    var kmInicio: Int?
     var kmTotales: Int?
     var latitudDestino: Double
     var latitudOrigen: Double
@@ -59,7 +59,6 @@ struct Detalle: Codable {
     var tiempoTotal: Int?
     var tipoAmbulancia: String
 }
-
 
 struct Servicio: Codable {
     var apellidoMaternoSocio: String
@@ -90,7 +89,7 @@ extension Servicio {
         idServicio: 1,
         nombreSocio: "Juan",
         origen: "Hospital Central",
-        tipoServicio: "Sencillo"
+        tipoServicio: "Sencillo",
     )
 }
 
@@ -107,7 +106,7 @@ extension Servicio {
         idServicio: 2,
         nombreSocio: "María",
         origen: "Hospital Zambrano",
-        tipoServicio: "Urgente"
+        tipoServicio: "Urgente",
     )
 }
 

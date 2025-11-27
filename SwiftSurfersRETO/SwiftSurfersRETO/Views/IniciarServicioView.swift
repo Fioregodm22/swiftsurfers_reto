@@ -1,21 +1,16 @@
-//
-//  IniciarServicioView.swift
-//  SwiftSurfersRETO
-//
-//  Created by Alejandra on 13/10/25.
-//
-
 import SwiftUI
 
 struct IniciarServicioView: View {
+    @State public var idServicio: Int
+    
     @Environment(\.dismiss) var dismiss
-    @State private var navegarADetalle = false
     @State private var navegarAConfirmarInicio = false
+    @State private var shouldDismissToRoot = false
     @State public var kmInicial: Int? = nil
     @State public var distanciaRecorrida: Double? = nil
     @State var calendario = Calendar.current
     @State var horaInicio = Date()
-    
+        
     @State private var errorKMInicial: Bool = false
     
     let gris1 = Color(red: 242/255.0, green: 242/255.0, blue: 242/255.0)
@@ -32,11 +27,10 @@ struct IniciarServicioView: View {
         let minuto = calendario.component(.minute, from: horaInicio)
         
         VStack{
-            //PARTE SUPERIOR
             ZStack(alignment: .topLeading){
                 Color(azul)
                     .ignoresSafeArea(edges: .top)
-                //RESUMEN STACK
+                
                 HStack (alignment: .center, spacing: 16) {
                     Image("novaLogo1")
                         .resizable(resizingMode: .stretch)
@@ -51,7 +45,7 @@ struct IniciarServicioView: View {
                             .foregroundStyle(Color.white)
                             .bold()
                             .font(.system(size: 25))
-                        Text ("# ID: 001")
+                        Text ("# ID: \(idServicio)")
                             .padding(.leading, 5)
                             .foregroundStyle(Color.white)
                             .font(.system(size: 20))
@@ -63,7 +57,6 @@ struct IniciarServicioView: View {
             .frame(height: 120)
             .padding(.bottom, 40)
             
-            //PARTE HORA
             VStack {
                 ZStack(alignment: .top) {
                     RoundedRectangle(cornerRadius: 20)
@@ -91,7 +84,6 @@ struct IniciarServicioView: View {
                 .padding(.top, 2)
             }
 
-            //PARTE KILOMETRAJE
             VStack {
                 ZStack(alignment: .top) {
                     RoundedRectangle(cornerRadius: 20)
@@ -127,16 +119,33 @@ struct IniciarServicioView: View {
                 }
                 .padding(.top, 15)
             }
-            //BOTONES
+            
             VStack {
-                //NavigationLink(destination: ServicioIniciado(), isActive: $nave)
                 Button(action: {
-                    if (kmInicial == nil) {
-                        errorKMInicial.toggle()
+                    if kmInicial == nil {
+                            errorKMInicial.toggle()
                     }
                     else {
-                        horaInicio = Date()
-                        navegarAConfirmarInicio = true
+                        Task {
+                            do {
+                                let api = AleAPI()
+
+                                try await api.iniciarServicio(
+                                    idServicio: idServicio,
+                                    kmInicio: kmInicial!
+                                )
+                                
+                                try await api.actualizarEstatus(idServicio: idServicio, idEstatus: 2)
+                                
+                                print("Servicio iniciado con éxito.")
+                                
+                                horaInicio = Date()
+                                navegarAConfirmarInicio = true
+                                
+                            } catch {
+                                print("Error al iniciar servicio")
+                            }
+                        }
                     }
                 }) {
                     Text("INICIAR")
@@ -149,7 +158,7 @@ struct IniciarServicioView: View {
                     .background(RoundedRectangle(cornerRadius: 20).fill(Color(azul)))
                     .bold(true)
                     .navigationDestination(isPresented: $navegarAConfirmarInicio) {
-                        ServicioIniciado()
+                        ServicioIniciado(shouldDismissToRoot: $shouldDismissToRoot)
                     }
                     .alert("Error", isPresented: $errorKMInicial) {
                         Button("Aceptar") {}
@@ -171,22 +180,26 @@ struct IniciarServicioView: View {
                     .foregroundStyle(.white)
                     .background(RoundedRectangle(cornerRadius: 20).fill(Color(gris4)))
                     .bold(true)
-                    //.navigationDestination(isPresented: $navegarADetalle) {
-                     //   dismiss()
-
-                    
             }
             .padding(.top, 60)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .background(gris2.opacity(0.3))
         .toolbar(.hidden)
+        .onChange(of: shouldDismissToRoot) { oldValue, newValue in
+            if newValue {
+                dismiss()
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    dismiss()
+                }
+            }
+        }
     }
 }
     
 
 #Preview {
     NavigationStack {
-        IniciarServicioView()
+        IniciarServicioView(idServicio: 5)
     }
 }

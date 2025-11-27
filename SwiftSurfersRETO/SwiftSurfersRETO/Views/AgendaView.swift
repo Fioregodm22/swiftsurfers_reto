@@ -5,6 +5,7 @@ struct AgendaView: View {
     @State private var servicios: [Servicio] = []
     @State private var isLoading = false
     @State private var filtroFecha: String = "hoy"
+    @State private var navegarACalendario = false
     let idPersonal = 5
     
     
@@ -82,8 +83,8 @@ struct AgendaView: View {
             .frame(height: 120)
             .padding(.bottom, 10)
             
-        
-            HStack {
+
+            HStack(spacing: 12) {
                 Button("Hoy") {
                     filtroFecha = "hoy"
                 }
@@ -109,6 +110,19 @@ struct AgendaView: View {
                 )
                 .bold()
                 .font(.system(size: 20))
+                
+                Button(action: {
+                    navegarACalendario = true
+                }) {
+                    Image(systemName: "calendar")
+                        .font(.system(size: 20))
+                        .foregroundStyle(.white)
+                        .frame(width: 50, height: 46)
+                        .background(
+                            RoundedRectangle(cornerRadius: 20)
+                                .fill(Color(red: 1/255, green: 104/255, blue: 138/255).opacity(0.8))
+                        )
+                }
             }
             .padding(.top, -5)
             .padding(.bottom, -5)
@@ -127,7 +141,7 @@ struct AgendaView: View {
             } else {
                 ScrollView {
                     VStack(spacing: 15) {
-                        ForEach(serviciosFiltrados, id: \.idServicio) { servicio in  
+                        ForEach(serviciosFiltrados, id: \.idServicio) { servicio in
                             NavigationLink(destination: DetalleView(hideTabBar: $hideTabBar, servicio: servicio)) {
                                 ReCuadro(servicio: servicio)
                             }
@@ -135,10 +149,15 @@ struct AgendaView: View {
                     }
                     .buttonStyle(.plain)
                     .padding(.vertical, 10)
+                    .padding(.horizontal, 15)
                 }
             }
         }
         .navigationBarHidden(true)
+
+        .navigationDestination(isPresented: $navegarACalendario) {
+                    CalendarioView(idworker: UserDefaults.standard.integer(forKey: "idworker"))
+                }
         .onAppear {
             Task {
                 await cargarServicios()
@@ -150,7 +169,7 @@ struct AgendaView: View {
         isLoading = true
         
         do {
-            let idPersonal = 5
+            let idPersonal = UserDefaults.standard.integer(forKey: "idworker")
             servicios = try await obtenerServicios(idPersonal: idPersonal)
         } catch {
             print("Error al cargar servicios: \(error.localizedDescription)")

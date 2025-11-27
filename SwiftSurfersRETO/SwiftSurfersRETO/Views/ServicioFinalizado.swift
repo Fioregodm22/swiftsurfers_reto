@@ -8,6 +8,9 @@
 import SwiftUI
 
 struct ServicioFinalizado: View {
+    @Binding var shouldDismissToRoot: Bool
+    @Environment(\.dismiss) var dismiss
+    
     var body: some View {
         VStack{
             ZStack{
@@ -28,8 +31,13 @@ struct ServicioFinalizado: View {
                 Image("check")
                     .padding(.top, -210)
                 
-                Button("ACEPTAR"){
-                    
+                Button(action: {
+                    dismiss()
+                    shouldDismissToRoot = true
+                }){
+                    Text("ACEPTAR")
+                        .font(.system(size: 20))
+                        .bold(true)
                 }
                 .padding()
                 .fontWeight(.bold)
@@ -39,18 +47,15 @@ struct ServicioFinalizado: View {
                 .foregroundStyle(Color.white)
                 .cornerRadius(20)
                 .padding(.top, 300)
-                
-                
             }
             .ignoresSafeArea(edges: .all)
+            .toolbar(.hidden)
             
-            
-        
         }
     }
     
 }
 
 #Preview {
-    ServicioFinalizado()
+    ServicioIniciado(shouldDismissToRoot: .constant(false))
 }

@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct LoginView: View {
-    @State private var navigate = false
+    @Binding var isLoggedIn: Bool  // CAMBIO: Ahora recibe un binding
     @State public var idworker : Int? = nil
     @State public var password : String = ""
     @State public var alertnotid = false
@@ -25,7 +25,7 @@ struct LoginView: View {
         }
         let idWorkerValue = idworker ?? 0
         let idworkerString = String(idWorkerValue)
-        let base = "http://toll-open-undertake-climb.trycloudflare.com/validaruser"
+        let base = "https://toll-open-undertake-climb.trycloudflare.com/validaruser"
         
         var components = URLComponents(string: base)!
         components.queryItems = [
@@ -63,7 +63,10 @@ struct LoginView: View {
             if result.valido == true {
                 print("Login exitoso. Usuario valido: \(result.id_usuario)")
                 UserDefaults.standard.set(idworker, forKey: "idworker")
-                navigate = true
+                // CAMBIO: En lugar de navigate = true, cambiamos isLoggedIn
+                withAnimation {
+                    isLoggedIn = true
+                }
                 alertnotid = false
                 alertnotpass = false
             } else {
@@ -79,7 +82,7 @@ struct LoginView: View {
 
     
     var body: some View {
-    NavigationStack{
+        // CAMBIO: Removemos el NavigationStack interno
         ZStack{
             Color(red: 1/255, green: 104/255 ,blue: 138/255)
             
@@ -148,20 +151,13 @@ struct LoginView: View {
                     }
                 }
                 
-                NavigationLink(destination: ContentView(), isActive:$navigate){
-                    EmptyView()
-                }
-                
+                // CAMBIO: Removemos el NavigationLink
                 
                 Button("INGRESAR"){
                     Task {
-                            await attemptLogin()
-                        }
-                    
-                    
-                    
+                        await attemptLogin()
+                    }
                 }
-                
                 .frame(width: 160, height: 54)
                 .background(Color(red: 1/255, green: 104/255 ,blue: 138/255))
                 .cornerRadius(20)
@@ -187,13 +183,11 @@ struct LoginView: View {
             idworker = UserDefaults.standard.integer(forKey: "idworker")
         }
         .background(Color(red: 1/255, green: 104/255 ,blue: 138/255))
-       
         .navigationBarTitle("")
-    }
-        
     }
 }
 
+// CAMBIO: Actualizamos el Preview para que compile
 #Preview {
-    LoginView()
+    LoginView(isLoggedIn: .constant(false))
 }
