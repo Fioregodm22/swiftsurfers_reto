@@ -22,8 +22,8 @@ struct PerfilView: View {
         }
         let idWorkerValue = idworker ?? 0
         let idworkerString = String(idWorkerValue)
-        let base = "http://toll-open-undertake-climb.trycloudflare.com/getuser"
-        
+        let base = "https://toll-open-undertake-climb.trycloudflare.com/getuser"
+    
         var components = URLComponents(string: base)!
         components.queryItems = [
             URLQueryItem(name: "id_usuario", value: idworkerString)
@@ -83,7 +83,7 @@ struct PerfilView: View {
         }
         
         
-        let url = URL(string: "http://toll-open-undertake-climb.trycloudflare.com/updatestatus")!
+        let url = URL(string: "https://toll-open-undertake-climb.trycloudflare.com/updatestatus")!
         var request = URLRequest(url: url)
         request.httpMethod = "PUT"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
