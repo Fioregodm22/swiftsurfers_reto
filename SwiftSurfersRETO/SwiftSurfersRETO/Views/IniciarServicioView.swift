@@ -122,8 +122,8 @@ struct IniciarServicioView: View {
             
             VStack {
                 Button(action: {
-                    if (kmInicial == nil) {
-                        errorKMInicial.toggle()
+                    if kmInicial == nil {
+                            errorKMInicial.toggle()
                     }
                     else {
                         Task {

@@ -9,23 +9,23 @@ import SwiftUI
 
 struct FinalizarServicioView: View {
     
-    @State public var idDetalle: Int // ID del detalle a finalizar
+    //servicio a finalizar
+    let idDetalle: Int
     
-    @State public var detalleInicial: GetInicio? = nil
-    @State public var kmFinal: Double? = nil
-    @State public var distanciaRecorrida: Double? = nil
+    @State private var detalleInicial: GetInicio? = nil
+    @State private var kmFinal: Double? = nil
+    @State private var distanciaRecorrida: Double? = nil
     @State private var errorKMFinal: Bool = false
     @State private var errorMessage: String? = nil
-    @State private var successMessage: Bool = false
     @State private var isLoading: Bool = false
     @State private var navegarAServicioFinalizado = false
     @State private var shouldDismissToRoot = false
     
     @Environment(\.dismiss) var dismiss
     
-    @State var calendario = Calendar.current
-    @State var horaActual = Date()
-    @State var horaInicio = Date()
+   
+    @State private var horaActual = Date()
+    @State private var horaInicio = Date()
     
     let gris1 = Color(red: 242/255.0, green: 242/255.0, blue: 242/255.0)
     let gris2 = Color(red: 211/255.0, green: 211/255.0, blue: 211/255.0)
@@ -35,54 +35,87 @@ struct FinalizarServicioView: View {
     let naranja = Color(red: 255/255.0, green: 153/255.0, blue: 0/255.0)
     let blancoClaro = Color(red: 251/255.0, green: 251/255.0, blue: 251/255.0)
     
-    //GET -  datos iniciales del servicio
+    //GET - datos iniciales del servicio
     func getDetalleInicial() async {
+        
+        //sofia api
         //let base = "http://10.14.255.43:10204/hora_km_inicial/\(idDetalle)"
         
-        let base = "http://10.14.255.43:10204/hora_km_inicial/\(idDetalle)"
+        //team api
+        let base = "https://toll-open-undertake-climb.trycloudflare.com/hora_km_inicial/\(idDetalle)"
         
         guard let url = URL(string: base) else {
             print("Error: No se pudo construir la URL.")
+            DispatchQueue.main.async {
+                self.errorMessage = "Error al construir la URL"
+            }
             return
         }
         
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
+       
         
         do {
             let (data, response) = try await URLSession.shared.data(for: request)
             
-            guard let httpResponse = response as? HTTPURLResponse,
-                  (200...299).contains(httpResponse.statusCode) else {
-                let status = (response as? HTTPURLResponse)?.statusCode ?? 0
+            guard let httpResponse = response as? HTTPURLResponse else {
                 DispatchQueue.main.async {
-                    self.errorMessage = "Respuesta de servidor inválida. Código: \(status)"
+                    self.errorMessage = "Respuesta de servidor invalida"
                 }
                 return
             }
             
+            
+            guard (200...299).contains(httpResponse.statusCode) else {
+                DispatchQueue.main.async {
+                    self.errorMessage = "Error del servidor. Código: \(httpResponse.statusCode)"
+                }
+                return
+            }
+            
+            // print respuesta
+            if let jsonString = String(data: data, encoding: .utf8) {
+                print("GET Response: \(jsonString)")
+            }
+            
+            //decodificar json con jsondecoer
             let decodedResponse = try JSONDecoder().decode(GetInicio.self, from: data)
             
+            //se guarda en detalleInicial
             DispatchQueue.main.async {
                 self.detalleInicial = decodedResponse
-                // convertir la hora de inicio de string a Date
-                if let horaInicioDate = convertirHoraStringADate(decodedResponse.horaInicio) {
+                
+                //convertir hora de string a date
+                if let horaInicioDate = self.convertirHoraStringADate(decodedResponse.horaInicio) {
                     self.horaInicio = horaInicioDate
+                    
+                } else {
+                    print("No se pudo convertir la hora de inicio: \(decodedResponse.horaInicio)")
                 }
             }
             
-        } catch {
+        } catch let decodingError as DecodingError {
+            print("Error de decodificacion: \(decodingError)")
             DispatchQueue.main.async {
-                self.errorMessage = "Error de conexión/decodificación: \(error.localizedDescription)"
+                self.errorMessage = "Error al procesar los datos del servidor"
+            }
+        } catch {
+            print("Error de conexion: \(error.localizedDescription)")
+            DispatchQueue.main.async {
+                self.errorMessage = "Error de conexion: \(error.localizedDescription)"
             }
         }
     }
     
     // PUT - Finalizar servicio
+    
+    //validar km final
     func finalizarServicio() async {
         guard let kmFinalValue = kmFinal else {
             DispatchQueue.main.async {
                 self.errorKMFinal = true
+                self.errorMessage = "Debes ingresar el kilometraje final"
             }
             return
         }
@@ -91,7 +124,7 @@ struct FinalizarServicioView: View {
         if let kmInicio = detalleInicial?.kmInicio {
             if kmFinalValue < Double(kmInicio) {
                 DispatchQueue.main.async {
-                    self.errorMessage = "El kilometraje final debe ser mayor al inicial (\(kmInicio) km)"
+                    self.errorMessage = "El kilometraje final (\(Int(kmFinalValue)) km) debe ser mayor al inicial (\(kmInicio) km)"
                     self.errorKMFinal = true
                 }
                 return
@@ -100,28 +133,47 @@ struct FinalizarServicioView: View {
         
         DispatchQueue.main.async {
             self.isLoading = true
+            self.errorMessage = nil
         }
         
+        //sofia API
+        //let urlString = "http://10.14.255.43:10204/hora_km_final/\(idDetalle)"
         
+        //TEAM API
+        let urlString = "https://toll-open-undertake-climb.trycloudflare.com/hora_km_final/\(idDetalle)"
+        guard let url = URL(string: urlString) else {
+            DispatchQueue.main.async {
+                self.errorMessage = "Error al construir la URL"
+                self.isLoading = false
+            }
+            return
+        }
         
-        let url = URL(string: "http://10.14.255.43:10204/hora_km_final/\(idDetalle)")!
         var request = URLRequest(url: url)
         request.httpMethod = "PUT"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        
-        // obtener hora actual en formato HH:mm:ss
+       
+
+        // obtener hora actual
         let formatter = DateFormatter()
         formatter.dateFormat = "HH:mm:ss"
-        let horaFinalString = formatter.string(from: horaActual)
+        formatter.timeZone = TimeZone.current //  zona horaria local
+        formatter.locale = Locale(identifier: "es_MX")
+        let horaFinalString = formatter.string(from: Date()) //  date() actual
         
+        //cuerpo del put
         let body: [String: Any] = [
             "horaFinal": horaFinalString,
             "kmFinal": Int(kmFinalValue)
         ]
         
+        print("PUT Request:")
+        print("Body: \(body)")
+        
+        //decodificar json con jsondecoer
         guard let bodyData = try? JSONSerialization.data(withJSONObject: body) else {
             DispatchQueue.main.async {
-                self.errorMessage = "Error para los datos para PUT."
+                self.errorMessage = "Error al preparar los datos"
                 self.isLoading = false
             }
             return
@@ -132,11 +184,24 @@ struct FinalizarServicioView: View {
         do {
             let (data, response) = try await URLSession.shared.data(for: request)
             
-            guard let httpResponse = response as? HTTPURLResponse,
-                  (200...299).contains(httpResponse.statusCode) else {
-                let status = (response as? HTTPURLResponse)?.statusCode ?? 0
+            guard let httpResponse = response as? HTTPURLResponse else {
                 DispatchQueue.main.async {
-                    self.errorMessage = "PUT Fallido. Código HTTP: \(status)"
+                    self.errorMessage = "Respuesta de servidor invalida"
+                    self.isLoading = false
+                }
+                return
+            }
+            
+            print("PUT Status Code: \(httpResponse.statusCode)")
+            
+            // debug: imprimir la respuesta
+            if let jsonString = String(data: data, encoding: .utf8) {
+                print("PUT Response: \(jsonString)")
+            }
+            
+            guard (200...299).contains(httpResponse.statusCode) else {
+                DispatchQueue.main.async {
+                    self.errorMessage = "Error del servidor. Codigo: \(httpResponse.statusCode)"
                     self.isLoading = false
                 }
                 return
@@ -144,36 +209,57 @@ struct FinalizarServicioView: View {
             
             let decodedResponse = try JSONDecoder().decode(PutFinalizar.self, from: data)
             
+            print("Servicio finalizado exitosamente")
+            print("Respuesta: \(decodedResponse)")
+            
             DispatchQueue.main.async {
                 self.errorMessage = nil
                 self.isLoading = false
+                //activa la navegacion
                 self.navegarAServicioFinalizado = true
-                print("Servicio finalizado exitosamente: \(decodedResponse)")
             }
             
-        } catch {
+        } catch let decodingError as DecodingError {
+            print("Error de decodificacion: \(decodingError)")
             DispatchQueue.main.async {
-                self.errorMessage = "Error de conexión/decodificación PUT: \(error.localizedDescription)"
+                self.errorMessage = "Error al procesar la respuesta del servidor"
+                self.isLoading = false
+            }
+        } catch {
+            print("Error de conexion: \(error.localizedDescription)")
+            DispatchQueue.main.async {
+                self.errorMessage = "Error de conexion: \(error.localizedDescription)"
                 self.isLoading = false
             }
         }
     }
     
-    //convertir string de hora a Date
+    // convertir string de hora a Date
     func convertirHoraStringADate(_ horaString: String) -> Date? {
+        let horaSinMicrosegundos = horaString.components(separatedBy: ".").first ?? horaString
+        
         let formatter = DateFormatter()
         formatter.dateFormat = "HH:mm:ss"
+        formatter.timeZone = TimeZone.current // zona horaria local
+        formatter.locale = Locale(identifier: "es_MX")
         
-        if let hora = formatter.date(from: horaString) {
-            // Combinar con la fecha actual
-            let calendar = Calendar.current
-            let components = calendar.dateComponents([.hour, .minute, .second], from: hora)
-            return calendar.date(bySettingHour: components.hour ?? 0,
-                               minute: components.minute ?? 0,
-                               second: components.second ?? 0,
-                               of: Date())
+        guard let hora = formatter.date(from: horaSinMicrosegundos) else {
+            print("No se pudo parsear la hora: \(horaString)")
+            return nil
         }
-        return nil
+        
+        // cambia solo la hora con la fecha actual
+        let calendar = Calendar.current
+        let components = calendar.dateComponents([.hour, .minute, .second], from: hora)
+        
+        guard let fechaCompleta = calendar.date(bySettingHour: components.hour ?? 0,
+                                                 minute: components.minute ?? 0,
+                                                 second: components.second ?? 0,
+                                                 of: Date()) else {
+            print("No se pudo crear la fecha completa")
+            return nil
+        }
+        return fechaCompleta
     }
     
     // calcular la distancia recorrida
@@ -183,8 +269,9 @@ struct FinalizarServicioView: View {
         }
     }
     
-    //FRONT
+    // FRONT
     var body: some View {
+        let calendario = Calendar.current
         let horaActualFormateada = calendario.component(.hour, from: horaActual)
         let minutoActualFormateado = calendario.component(.minute, from: horaActual)
         
@@ -212,7 +299,7 @@ struct FinalizarServicioView: View {
                             .foregroundStyle(Color.white)
                             .bold()
                             .font(.system(size: 25))
-                        Text("# ID: \(detalleInicial?.idDetalle ?? idDetalle)")
+                        Text("# ID Servicio: \(idDetalle)")
                             .padding(.leading, 5)
                             .foregroundStyle(Color.white)
                             .font(.system(size: 20))
@@ -244,9 +331,14 @@ struct FinalizarServicioView: View {
                             
                             Spacer()
                             
-                            Text(String(format: "%02d:%02d", horaInicioFormateada, minutoInicioFormateado))
-                                .font(.system(size: 15, weight: .bold))
-                                .foregroundStyle(gris4)
+                            if detalleInicial != nil {
+                                Text(String(format: "%02d:%02d", horaInicioFormateada, minutoInicioFormateado))
+                                    .font(.system(size: 15, weight: .bold))
+                                    .foregroundStyle(gris4)
+                            } else {
+                                ProgressView()
+                                    .scaleEffect(0.8)
+                            }
                         }
                         .padding(.bottom, 7)
                         
@@ -287,7 +379,7 @@ struct FinalizarServicioView: View {
                 ZStack(alignment: .top) {
                     RoundedRectangle(cornerRadius: 20)
                         .fill(Color(blancoClaro))
-                        .frame(width: 350, height: 255)
+                        .frame(width: 350, height: 240)
                     
                     VStack(alignment: .leading, spacing: 16) {
                         HStack {
@@ -297,10 +389,16 @@ struct FinalizarServicioView: View {
                             
                             Spacer()
                             
-                            Text("\(detalleInicial?.kmInicio ?? 0) km")
-                                .font(.system(size: 15, weight: .bold))
-                                .foregroundStyle(gris4)
-                                .padding(.trailing, 30)
+                            if let kmInicio = detalleInicial?.kmInicio {
+                                Text("\(kmInicio) km")
+                                    .font(.system(size: 15, weight: .bold))
+                                    .foregroundStyle(gris4)
+                                    .padding(.trailing, 30)
+                            } else {
+                                ProgressView()
+                                    .scaleEffect(0.8)
+                                    .padding(.trailing, 30)
+                            }
                         }
                         
                         VStack(alignment: .leading, spacing: 8) {
@@ -312,12 +410,13 @@ struct FinalizarServicioView: View {
                             
                             HStack {
                                 Spacer()
-                                TextField("", value: $kmFinal, format: .number)
+                                TextField("Ingresa el kilometraje", value: $kmFinal, format: .number)
                                     .padding(.horizontal, 16)
                                     .frame(width: 230, height: 40)
                                     .background(RoundedRectangle(cornerRadius: 20).fill(Color(gris1)))
                                     .foregroundStyle(gris4)
-                                    .onChange(of: kmFinal) {
+                                    .keyboardType(.decimalPad)
+                                    .onChange(of: kmFinal) { _, _ in
                                         calcularDistancia()
                                     }
                                 Spacer()
@@ -329,7 +428,7 @@ struct FinalizarServicioView: View {
                                 ZStack {
                                     RoundedRectangle(cornerRadius: 20)
                                         .fill(Color(naranja)).opacity(0.8)
-                                    Text("Distancia recorrida: \(distanciaRecorrida.map { String(format: "%.0f", $0) } ?? "0") km")
+                                    Text("Distancia recorrida: \((distanciaRecorrida ?? 0) >= 0 ? String(format: "%.0f", distanciaRecorrida ?? 0) : "0") km")
                                         .foregroundColor(.white)
                                         .font(.system(size: 20))
                                         .padding(.horizontal, 12)
@@ -339,8 +438,7 @@ struct FinalizarServicioView: View {
                                 .offset(y: -18)
                                 Spacer()
                             }
-                            .padding(.top, 30)
-                    
+                            .padding(.top, 20)
                         }
                         Spacer()
                     }
@@ -355,63 +453,70 @@ struct FinalizarServicioView: View {
                         .foregroundStyle(.white)
                         .offset(y: -18)
                 }
-                .padding(.top, 25)
+                .padding(.top, 50)
             }
-            
-            // Mensaje de error
-            if let error = errorMessage {
-                Text(error)
-                    .foregroundColor(.red)
-                    .font(.system(size: 14))
-                    .padding(.horizontal, 20)
-                    .padding(.top, 10)
-            }
+
             
             // BOTONES
             VStack {
                 Button(action: {
                     if kmFinal == nil {
                         errorKMFinal = true
+                        errorMessage = "Debes ingresar el kilometraje final"
                     } else {
                         Task {
-                            await finalizarServicio()
+                            do {
+                                let api = AleAPI()
+
+                                try await api.actualizarEstatus(idServicio: idDetalle, idEstatus: 3)
+                                
+                                await finalizarServicio()
+                                
+                            } catch {
+                                print("Error al finalizar servicio")
+                            }
                         }
                     }
                 }) {
                     Text("FINALIZAR")
-                        .font(.system(size: 20))
+                        .font(.system(size: 25))
                         .bold(true)
                 }
-                .frame(width: 300)
-                .frame(height: 60)
+                .frame(width: 250)
+                .frame(height: 50)
                 .foregroundStyle(.white)
                 .background(RoundedRectangle(cornerRadius: 20).fill(Color(azul)))
-                .bold(true)
+                .padding(.top, -50)
+                .disabled(isLoading || detalleInicial == nil)
+                .opacity((isLoading || detalleInicial == nil) ? 0.6 : 1.0)
                 .navigationDestination(isPresented: $navegarAServicioFinalizado) {
                     ServicioFinalizado(shouldDismissToRoot: $shouldDismissToRoot)
                 }
                 .alert("Error", isPresented: $errorKMFinal) {
-                    Button("Aceptar") {}
+                    Button("Aceptar") {
+                        errorKMFinal = false
+                    }
                 } message: {
-                    Text("Debes ingresar un kilometraje válido mayor al kilometraje inicial")
+                    Text(errorMessage ?? "Debes ingresar un kilometraje valido mayor al kilometraje inicial")
                 }
                 
                 Spacer()
-                    .frame(height: 40)
-                
+                    .frame(height: 20)
+                    
                 Button(action: {
                     dismiss()
                 }) {
                     Text("CANCELAR")
-                        .font(.system(size: 20))
+                        .font(.system(size: 25))
                         .bold(true)
                 }
-                .frame(width: 300)
-                .frame(height: 60)
+                .frame(width: 250)
+                .frame(height: 50)
                 .foregroundStyle(.white)
                 .background(RoundedRectangle(cornerRadius: 20).fill(Color(gris4)))
-                .bold(true)
             }
+            .padding(.top, 50)
+            
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .background(gris2.opacity(0.3))
@@ -426,6 +531,7 @@ struct FinalizarServicioView: View {
         }
         .navigationBarHidden(true)
         .onAppear {
+            print("FinalizarServicioView onAppear - idDetalle: \(idDetalle)")
             Task {
                 await getDetalleInicial()
             }
@@ -434,5 +540,5 @@ struct FinalizarServicioView: View {
 }
 
 #Preview {
-    FinalizarServicioView(idDetalle: 9)
+    FinalizarServicioView(idDetalle: 10)
 }

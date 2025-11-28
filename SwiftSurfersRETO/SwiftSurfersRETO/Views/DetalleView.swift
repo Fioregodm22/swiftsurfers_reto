@@ -298,7 +298,7 @@ struct DetalleView: View {
                     }
                     
                     HStack {
-                        Text("Numero de Socio")
+                        Text("Número de Socio")
                             .font(.system(size: 18).bold())
                         Spacer()
                         Text(String(servicio.idNumeroSocio))
@@ -307,7 +307,7 @@ struct DetalleView: View {
                     .padding(3)
                     
                     HStack{
-                        Text("ID Medico")
+                        Text("ID Médico")
                             .font(.system(size: 18).bold())
                         Spacer()
                         Text(detalle.idMedico != nil ? String(detalle.idMedico!) : "No asignado")
