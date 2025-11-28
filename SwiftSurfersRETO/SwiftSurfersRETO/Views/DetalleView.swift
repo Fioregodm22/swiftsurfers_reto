@@ -188,38 +188,39 @@ struct DetalleView: View {
             }
             .frame(maxWidth: .infinity)
             .frame(height: 120)
-            
-            VStack {
-                HStack{
-                    Text("Estatus del Servicio")
-                        .font(.system(size: 14).bold())
-                    Spacer()
-                    Text(estado.nombre)
-                        .font(.caption).bold()
-                        .padding(.vertical, 6)
-                        .padding(.horizontal, 10)
-                        .background(estado.color.opacity(0.15))
-                        .foregroundStyle(estado.color)
-                        .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
-                }
+            VStack(spacing: 15){
                 
-                MapaView(
-                    latitud: calcularLatitudMedia(
-                        latitudOrigen: detalle.latitudOrigen,
-                        latitudDestino: detalle.latitudDestino
-                    ),
-                    longitud: calcularLongitudMedia(
-                        longitudOrigen: detalle.longitudOrigen,
-                        longitudDestino: detalle.longitudDestino
-                    ),
-                    customMark: marcadorList
-                )
+                VStack {
+                    HStack{
+                        Text("Estatus del Servicio")
+                            .font(.system(size: 14).bold())
+                        Spacer()
+                        Text(estado.nombre)
+                            .font(.caption).bold()
+                            .padding(.vertical, 6)
+                            .padding(.horizontal, 10)
+                            .background(estado.color.opacity(0.15))
+                            .foregroundStyle(estado.color)
+                            .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
+                    }
+                    
+                    MapaView(
+                        latitud: calcularLatitudMedia(
+                            latitudOrigen: detalle.latitudOrigen,
+                            latitudDestino: detalle.latitudDestino
+                        ),
+                        longitud: calcularLongitudMedia(
+                            longitudOrigen: detalle.longitudOrigen,
+                            longitudDestino: detalle.longitudDestino
+                        ),
+                        customMark: marcadorList
+                    )
                     .frame(height: 200)
                     .clipped()
                     .onTapGesture {
                         abrirGoogleMaps(latitud: detalle.latitudDestino, longitud: detalle.longitudDestino)
                     }
-                HStack{
+                    HStack{
                         HStack(spacing: 6) {
                             Circle()
                                 .fill(naranja)
@@ -238,137 +239,140 @@ struct DetalleView: View {
                                 .font(.system(size: 14))
                                 .foregroundColor(.gray)
                         }
-                    Spacer()
-                }
-                .padding(.horizontal, 10)
-                .padding(.top, 2)
-            }
-            .padding(10)
-            .background(Color.gray.opacity(0.15))
-            .frame(width: 370)
-            .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
-            
-            VStack {
-                HStack{
-                    Image(estado.Image)
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(height: 30)
-                    
-                    Text(servicio.hora)
-                        .font(.system(size: 22))
-                    Spacer()
-                }
-                
-                HStack{
-                    Text("Tipo de Traslado")
-                        .font(.system(size: 18).bold())
-                    Spacer()
-                    Text(servicio.tipoServicio)
-                        .font(.system(size: 18))
-                }
-                .padding(3)
-                
-                HStack{
-                    Text("Tipo de Ambulancia")
-                        .font(.system(size: 18).bold())
-                    Spacer()
-                    Text(detalle.tipoAmbulancia)
-                        .font(.system(size: 18))
-                }
-                .padding(3)
-            }
-            .padding(15)
-            .background(Color.gray.opacity(0.15))
-            .frame(width: 370)
-            .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
-            
-            VStack {
-                HStack{
-                    Image(systemName: "person")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(height: 30)
-                        .foregroundColor(.gray)
-                    
-                    Text("\(servicio.nombreSocio) \(servicio.apellidoPaternoSocio) \(servicio.apellidoMaternoSocio)")
-                        .font(.system(size: 20))
-                    Spacer()
-                }
-                
-                HStack {
-                    Text("Numero de Socio")
-                        .font(.system(size: 18).bold())
-                    Spacer()
-                    Text(String(servicio.idNumeroSocio))
-                        .font(.system(size: 18))
-                }
-                .padding(3)
-                
-                HStack{
-                    Text("ID Medico")
-                        .font(.system(size: 18).bold())
-                    Spacer()
-                    Text(detalle.idMedico != nil ? String(detalle.idMedico!) : "No asignado")
-                        .font(.system(size: 18))
-                }
-                .padding(3)
-            }
-            .padding(15)
-            .background(Color.gray.opacity(0.15))
-            .frame(width: 370)
-            .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
-            
-            
-            if servicio.idEstatus == 1 {  
-                Button(action: {
-                    navegarAIniciar = true
-                }) {
-                    HStack(spacing: 12) {
-                        Image(systemName: "play.circle.fill")
-                            .font(.system(size: 20))
-                        
-                        Text("Iniciar Servicio")
-                            .font(.system(size: 20))
-                            .bold(true)
+                        Spacer()
                     }
-                    .frame(width: 360)
-                    .frame(height: 60)
-                    .foregroundColor(.white)
-                    .background(
-                        RoundedRectangle(cornerRadius: 20)
-                            .fill(naranja)
-                    )
+                    .padding(.horizontal, 10)
+                    .padding(.top, 2)
                 }
-                .navigationDestination(isPresented: $navegarAIniciar) {
-                    IniciarServicioView(idServicio: servicio.idServicio)
-                }
-            } else if servicio.idEstatus == 2 {
-                Button(action: {
-                    navegarAFinalizar = true
-                }) {
-                    HStack(spacing: 12) {
-                        Image(systemName: "stop.circle.fill")
-                            .font(.system(size: 20))
+                .padding(10)
+                .background(Color.gray.opacity(0.15))
+                //.frame(width: 370)
+                .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
+                
+                VStack {
+                    HStack{
+                        Image(estado.Image)
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(height: 30)
                         
-                        Text("Finalizar Servicio")
-                            .font(.system(size: 20))
-                            .bold(true)
+                        Text(servicio.hora)
+                            .font(.system(size: 22))
+                        Spacer()
                     }
-                    .frame(width: 360)
-                    .frame(height: 60)
-                    .foregroundColor(.white)
-                    .background(
-                        RoundedRectangle(cornerRadius: 20)
-                            .fill(azul)
-                    )
+                    
+                    HStack{
+                        Text("Tipo de Traslado")
+                            .font(.system(size: 18).bold())
+                        Spacer()
+                        Text(servicio.tipoServicio)
+                            .font(.system(size: 18))
+                    }
+                    .padding(3)
+                    
+                    HStack{
+                        Text("Tipo de Ambulancia")
+                            .font(.system(size: 18).bold())
+                        Spacer()
+                        Text(detalle.tipoAmbulancia)
+                            .font(.system(size: 18))
+                    }
+                    .padding(3)
                 }
-                .navigationDestination(isPresented: $navegarAFinalizar) {
-                    FinalizarServicioView(idDetalle: detalle.idDetalle)
+                .padding(15)
+                .background(Color.gray.opacity(0.15))
+                //.frame(width: 370)
+                .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
+                
+                VStack {
+                    HStack{
+                        Image(systemName: "person")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(height: 30)
+                            .foregroundColor(.gray)
+                        
+                        Text("\(servicio.nombreSocio) \(servicio.apellidoPaternoSocio) \(servicio.apellidoMaternoSocio)")
+                            .font(.system(size: 20))
+                        Spacer()
+                    }
+                    
+                    HStack {
+                        Text("Número de Socio")
+                            .font(.system(size: 18).bold())
+                        Spacer()
+                        Text(String(servicio.idNumeroSocio))
+                            .font(.system(size: 18))
+                    }
+                    .padding(3)
+                    
+                    HStack{
+                        Text("ID Médico")
+                            .font(.system(size: 18).bold())
+                        Spacer()
+                        Text(detalle.idMedico != nil ? String(detalle.idMedico!) : "No asignado")
+                            .font(.system(size: 18))
+                    }
+                    .padding(3)
                 }
+                .padding(15)
+                .background(Color.gray.opacity(0.15))
+                //.frame(width: 370)
+                .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
+                
+                
+                if servicio.idEstatus == 1 {
+                    Button(action: {
+                        navegarAIniciar = true
+                    }) {
+                        HStack(spacing: 12) {
+                            Image(systemName: "play.circle.fill")
+                                .font(.system(size: 20))
+                            
+                            Text("Iniciar Servicio")
+                                .font(.system(size: 20))
+                                .bold(true)
+                        }
+                        .frame(width: 360)
+                        .frame(height: 60)
+                        .foregroundColor(.white)
+                        .background(
+                            RoundedRectangle(cornerRadius: 20)
+                                .fill(naranja)
+                        )
+                    }
+                    .navigationDestination(isPresented: $navegarAIniciar) {
+                        IniciarServicioView(idServicio: servicio.idServicio)
+                    }
+                } else if servicio.idEstatus == 2 {
+                    Button(action: {
+                        navegarAFinalizar = true
+                    }) {
+                        HStack(spacing: 12) {
+                            Image(systemName: "stop.circle.fill")
+                                .font(.system(size: 20))
+                            
+                            Text("Finalizar Servicio")
+                                .font(.system(size: 20))
+                                .bold(true)
+                        }
+                        .frame(width: 360)
+                        .frame(height: 60)
+                        .foregroundColor(.white)
+                        .background(
+                            RoundedRectangle(cornerRadius: 20)
+                                .fill(azul)
+                        )
+                    }
+                    .navigationDestination(isPresented: $navegarAFinalizar) {
+                        FinalizarServicioView(idDetalle: detalle.idDetalle)
+                    }
+                }
+                
+                Spacer()
             }
-            
-            Spacer()
+            .padding(.top, -10)
+            .padding()
         }
     }
 }

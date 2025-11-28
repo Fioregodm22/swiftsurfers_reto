@@ -85,7 +85,7 @@ struct PerfilView: View {
         }
         
         
-        let url = URL(string: "http://toll-open-undertake-climb.trycloudflare.com/updatestatus")!
+        let url = URL(string: "http://10.14.255.43:10205/updatestatus")!
         var request = URLRequest(url: url)
         request.httpMethod = "PUT"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
