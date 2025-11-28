@@ -38,7 +38,14 @@ struct FinalizarServicioView: View {
     //GET - datos iniciales del servicio
     func getDetalleInicial() async {
         
-        let base = "http://10.14.255.43:10204/hora_km_inicial/\(idDetalle)"
+        //sofia api
+        //let base = "http://10.14.255.43:10204/hora_km_inicial/\(idDetalle)"
+        
+        //team api
+        //let base = "https://toll-open-undertake-climb.trycloudflare.com/hora_km_inicial/\(idDetalle)"
+        
+        //team api nueva!!!!
+        let base = "https://victoria-forecasts-headquarters-lemon.trycloudflare.com/hora_km_inicial/\(idDetalle)"
         
         guard let url = URL(string: base) else {
             print("Error: No se pudo construir la URL.")
@@ -132,8 +139,14 @@ struct FinalizarServicioView: View {
             self.errorMessage = nil
         }
         
-        //conexion
-        let urlString = "http://10.14.255.43:10204/hora_km_final/\(idDetalle)"
+        //sofia API
+        //let urlString = "http://10.14.255.43:10204/hora_km_final/\(idDetalle)"
+        
+        //TEAM API
+        //let urlString = "https://toll-open-undertake-climb.trycloudflare.com/hora_km_final/\(idDetalle)"
+        
+        //TEAM API NUEVA!!
+        let urlString = "https://victoria-forecasts-headquarters-lemon.trycloudflare.com/hora_km_final/\(idDetalle)"
         guard let url = URL(string: urlString) else {
             DispatchQueue.main.async {
                 self.errorMessage = "Error al construir la URL"
@@ -421,7 +434,7 @@ struct FinalizarServicioView: View {
                                 ZStack {
                                     RoundedRectangle(cornerRadius: 20)
                                         .fill(Color(naranja)).opacity(0.8)
-                                    Text("Distancia recorrida: \(distanciaRecorrida.map { String(format: "%.0f", $0) } ?? "0") km")
+                                    Text("Distancia recorrida: \((distanciaRecorrida ?? 0) >= 0 ? String(format: "%.0f", distanciaRecorrida ?? 0) : "0") km")
                                         .foregroundColor(.white)
                                         .font(.system(size: 20))
                                         .padding(.horizontal, 12)
