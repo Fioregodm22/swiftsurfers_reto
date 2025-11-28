@@ -275,7 +275,7 @@ struct CalendarioView: View {
         isLoading = true
         errorMessage = nil
         
-        let base = "https://toll-open-undertake-climb.trycloudflare.com/getviaje"
+        let base = "https://victoria-forecasts-headquarters-lemon.trycloudflare.com/getviaje"
         let idUsuarioString = String(id)
         
         var urlComponents = URLComponents(string: base)!
