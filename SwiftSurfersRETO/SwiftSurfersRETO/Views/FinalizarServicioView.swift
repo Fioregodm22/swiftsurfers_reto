@@ -38,7 +38,11 @@ struct FinalizarServicioView: View {
     //GET - datos iniciales del servicio
     func getDetalleInicial() async {
         
-        let base = "http://10.14.255.43:10204/hora_km_inicial/\(idDetalle)"
+        //sofia api
+        //let base = "http://10.14.255.43:10204/hora_km_inicial/\(idDetalle)"
+        
+        //team api
+        let base = "https://toll-open-undertake-climb.trycloudflare.com/hora_km_inicial/\(idDetalle)"
         
         guard let url = URL(string: base) else {
             print("Error: No se pudo construir la URL.")
@@ -132,8 +136,11 @@ struct FinalizarServicioView: View {
             self.errorMessage = nil
         }
         
-        //conexion
-        let urlString = "http://10.14.255.43:10204/hora_km_final/\(idDetalle)"
+        //sofia API
+        //let urlString = "http://10.14.255.43:10204/hora_km_final/\(idDetalle)"
+        
+        //TEAM API
+        let urlString = "https://toll-open-undertake-climb.trycloudflare.com/hora_km_final/\(idDetalle)"
         guard let url = URL(string: urlString) else {
             DispatchQueue.main.async {
                 self.errorMessage = "Error al construir la URL"
