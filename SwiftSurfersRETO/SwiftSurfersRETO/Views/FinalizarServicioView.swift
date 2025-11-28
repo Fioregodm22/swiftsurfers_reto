@@ -421,7 +421,7 @@ struct FinalizarServicioView: View {
                                 ZStack {
                                     RoundedRectangle(cornerRadius: 20)
                                         .fill(Color(naranja)).opacity(0.8)
-                                    Text("Distancia recorrida: \(distanciaRecorrida.map { String(format: "%.0f", $0) } ?? "0") km")
+                                    Text("Distancia recorrida: \((distanciaRecorrida ?? 0) >= 0 ? String(format: "%.0f", distanciaRecorrida ?? 0) : "0") km")
                                         .foregroundColor(.white)
                                         .font(.system(size: 20))
                                         .padding(.horizontal, 12)
