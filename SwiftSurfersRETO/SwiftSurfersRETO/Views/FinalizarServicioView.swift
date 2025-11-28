@@ -42,7 +42,10 @@ struct FinalizarServicioView: View {
         //let base = "http://10.14.255.43:10204/hora_km_inicial/\(idDetalle)"
         
         //team api
-        let base = "https://toll-open-undertake-climb.trycloudflare.com/hora_km_inicial/\(idDetalle)"
+        //let base = "https://toll-open-undertake-climb.trycloudflare.com/hora_km_inicial/\(idDetalle)"
+        
+        //team api nueva!!!!
+        let base = "https://victoria-forecasts-headquarters-lemon.trycloudflare.com/hora_km_inicial/\(idDetalle)"
         
         guard let url = URL(string: base) else {
             print("Error: No se pudo construir la URL.")
@@ -140,7 +143,10 @@ struct FinalizarServicioView: View {
         //let urlString = "http://10.14.255.43:10204/hora_km_final/\(idDetalle)"
         
         //TEAM API
-        let urlString = "https://toll-open-undertake-climb.trycloudflare.com/hora_km_final/\(idDetalle)"
+        //let urlString = "https://toll-open-undertake-climb.trycloudflare.com/hora_km_final/\(idDetalle)"
+        
+        //TEAM API NUEVA!!
+        let urlString = "https://victoria-forecasts-headquarters-lemon.trycloudflare.com/hora_km_final/\(idDetalle)"
         guard let url = URL(string: urlString) else {
             DispatchQueue.main.async {
                 self.errorMessage = "Error al construir la URL"
