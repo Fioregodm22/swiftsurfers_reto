@@ -39,3 +39,8 @@ struct StatusUpdateResponse: Decodable {
     let nuevo_status: String
 }
 
+
+struct LoginRequest: Encodable {
+    let id_usuario: Int
+    let contrasena: String // O el nombre de tu variable de contraseña (password)
+}

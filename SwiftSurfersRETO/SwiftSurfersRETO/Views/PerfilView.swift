@@ -24,7 +24,7 @@ struct PerfilView: View {
         }
         let idWorkerValue = idworker ?? 0
         let idworkerString = String(idWorkerValue)
-        let base = "https://toll-open-undertake-climb.trycloudflare.com/getuser"
+        let base = "http://10.14.255.43:10205/getuser"
         
         var components = URLComponents(string: base)!
         components.queryItems = [

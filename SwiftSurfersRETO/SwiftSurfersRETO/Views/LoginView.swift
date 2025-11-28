@@ -23,66 +23,98 @@ struct LoginView: View {
             alertnotid = true
             return
         }
+
         let idWorkerValue = idworker ?? 0
+        // id usuario a string
         let idworkerString = String(idWorkerValue)
-        let base = "https://toll-open-undertake-climb.trycloudflare.com/validaruser"
         
-        var components = URLComponents(string: base)!
-        components.queryItems = [
-           
-            URLQueryItem(name: "id_usuario", value: idworkerString),
-            URLQueryItem(name: "contrasena", value: password)
-        ]
         
-        guard let url = components.url else {
-            
-            print("Error: No se pudo construir la URL.")
+        //  URL base
+        let urlString = "http://10.14.255.43:10205/validaruser"
+
+        guard let url = URL(string: urlString) else {
+            print("Error: URL inválida.")
+            return
+        }
+
+        // cadena url
+        let postString = "id_usuario=\(idworkerString)&contrasena=\(password)"
+        
+        
+        guard let postData = postString.data(using: .utf8) else {
+            print("Error: No se pudo codificar la cadena Form-Data.")
             return
         }
         
+    
+        
+        
         var request = URLRequest(url: url)
-        request.httpMethod = "GET"
+        
+        // es un metodo post
+        request.httpMethod = "POST"
+        
+        // Form-Data (application/x-www-form-urlencoded)
+        request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
+        
+        // datos codificados
+        request.httpBody = postData
+        
         
         
         do {
             let (data, response) = try await URLSession.shared.data(for: request)
             
-           
+          
             guard let httpResponse = response as? HTTPURLResponse,
                   (200...299).contains(httpResponse.statusCode) else {
-                print("Error HTTP.")
-                alertnotpass = true
+                
+                let statusCode = (response as? HTTPURLResponse)?.statusCode ?? 0
+                
+                // Opcional: Imprimir la respuesta de error si no es 200 (para depuración)
+                if let errorResponseString = String(data: data, encoding: .utf8) {
+                    print("Respuesta de error (Código \(statusCode)): \(errorResponseString)")
+                }
+                
+                DispatchQueue.main.async {
+                    print("Error HTTP. Código de estado: \(statusCode)")
+                    self.alertnotpass = true
+                }
                 return
             }
 
-
+            //
             let decoder = JSONDecoder()
             let result = try decoder.decode(LoginResponse.self, from: data)
             
-
-            if result.valido == true {
-                print("Login exitoso. Usuario valido: \(result.id_usuario)")
-                UserDefaults.standard.set(idworker, forKey: "idworker")
-                // CAMBIO: En lugar de navigate = true, cambiamos isLoggedIn
-                withAnimation {
-                    isLoggedIn = true
+            //
+            DispatchQueue.main.async {
+                if result.valido == true {
+                    print("Login exitoso. Usuario valido: \(result.id_usuario)")
+                    UserDefaults.standard.set(self.idworker, forKey: "idworker")
+                    
+                    withAnimation {
+                        self.isLoggedIn = true
+                    }
+                    self.alertnotid = false
+                    self.alertnotpass = false
+                } else {
+                    //
+                    print("Login fallido. Mensaje: \(result.mensaje)")
+                    self.alertnotpass = true
                 }
-                alertnotid = false
-                alertnotpass = false
-            } else {
-                print("Login fallido. Mensaje: \(result.mensaje)")
-                alertnotpass = true
             }
             
         } catch {
-            print("Error general: \(error.localizedDescription)")
-            alertnotpass = true
+            DispatchQueue.main.async {
+                print("Error general (Decodificación/Red): \(error.localizedDescription)")
+                self.alertnotpass = true
+            }
         }
     }
-
     
     var body: some View {
-        // CAMBIO: Removemos el NavigationStack interno
+        //
         ZStack{
             Color(red: 1/255, green: 104/255 ,blue: 138/255)
             
@@ -151,7 +183,7 @@ struct LoginView: View {
                     }
                 }
                 
-                // CAMBIO: Removemos el NavigationLink
+                //
                 
                 Button("INGRESAR"){
                     Task {
@@ -187,7 +219,7 @@ struct LoginView: View {
     }
 }
 
-// CAMBIO: Actualizamos el Preview para que compile
+//
 #Preview {
     LoginView(isLoggedIn: .constant(false))
 }
