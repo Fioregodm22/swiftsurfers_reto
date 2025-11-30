@@ -45,7 +45,7 @@ struct FinalizarServicioView: View {
         //let base = "https://toll-open-undertake-climb.trycloudflare.com/hora_km_inicial/\(idDetalle)"
         
         //team api nueva!!!!
-        let base = "https://victoria-forecasts-headquarters-lemon.trycloudflare.com/hora_km_inicial/\(idDetalle)"
+        let base = "https://misc-cedar-beam-colon.trycloudflare.com/hora_km_inicial/\(idDetalle)"
         
         guard let url = URL(string: base) else {
             print("Error: No se pudo construir la URL.")

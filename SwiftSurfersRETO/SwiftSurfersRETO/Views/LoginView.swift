@@ -30,7 +30,7 @@ struct LoginView: View {
         
         
         //  URL base
-        let urlString = "http://10.14.255.43:10205/validaruser"
+        let urlString = "https://misc-cedar-beam-colon.trycloudflare.com/validaruser"
 
         guard let url = URL(string: urlString) else {
             print("Error: URL inválida.")

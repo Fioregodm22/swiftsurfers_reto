@@ -11,7 +11,7 @@ func abrirGoogleMaps(latitud: Double, longitud: Double) {
 }
 
 func obtenerServicios(idPersonal: Int) async throws -> [Servicio] {
-    let base = "https://victoria-forecasts-headquarters-lemon.trycloudflare.com/servicio"
+    let base = "https://misc-cedar-beam-colon.trycloudflare.com/servicio"
     var components = URLComponents(string: base)!
     components.queryItems = [
         URLQueryItem(name: "idPersonal", value: String(idPersonal))
@@ -33,7 +33,7 @@ func obtenerServicios(idPersonal: Int) async throws -> [Servicio] {
 }
 
 func obtenerDetalle(idServicio: Int) async throws -> Detalle {
-    let base = "https://victoria-forecasts-headquarters-lemon.trycloudflare.com/detalle"
+    let base = "https://misc-cedar-beam-colon.trycloudflare.com/detalle"
     var components = URLComponents(string: base)!
     components.queryItems = [
         URLQueryItem(name: "idServicio", value: String(idServicio))
