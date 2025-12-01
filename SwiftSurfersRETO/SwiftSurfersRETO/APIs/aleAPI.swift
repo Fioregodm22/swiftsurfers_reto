@@ -55,6 +55,30 @@ class AleAPI {
         
         return responseData
     }
+    
+    func finalizarServicio(idDetalle: Int, horaFinal: String, kmFinal: Int) async throws -> FinalizarServicioResponse {
+        let url = URL(string: "\(baseURL)/hora_km_final/\(idDetalle)")!
+        var urlRequest = URLRequest(url: url)
+        urlRequest.httpMethod = "PUT"
+        urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        let body = FinalizarServicioRequest(horaFinal: horaFinal, kmFinal: kmFinal)
+        urlRequest.httpBody = try JSONEncoder().encode(body)
+        
+        let (data, response) = try await URLSession.shared.data(for: urlRequest)
+        
+        guard let httpResponse = response as? HTTPURLResponse,
+              httpResponse.statusCode == 200 else {
+            throw APIError.invalidResponse
+        }
+        
+        let apiResponse = try JSONDecoder().decode(APIResponseAle<FinalizarServicioResponse>.self, from: data)
+        guard let responseData = apiResponse.data else {
+            throw APIError.noData
+        }
+        
+        return responseData
+    }
 
     func actualizarEstatus(idServicio: Int, idEstatus: Int) async throws -> Bool {
         let url = URL(string: "\(baseURL)/updateEstatusServicio/\(idServicio)")!
@@ -77,7 +101,7 @@ class AleAPI {
     }
 }
 
-enum APIError: Error{
+enum APIError: Error {
     case invalidResponse
     case noData
     case decodingError
@@ -96,4 +120,3 @@ enum APIError: Error{
         }
     }
 }
-

@@ -23,7 +23,6 @@ struct FinalizarServicioView: View {
     
     @Environment(\.dismiss) var dismiss
     
-   
     @State private var horaActual = Date()
     @State private var horaInicio = Date()
     
@@ -37,14 +36,6 @@ struct FinalizarServicioView: View {
     
     //GET - datos iniciales del servicio
     func getDetalleInicial() async {
-        
-        //sofia api
-        //let base = "http://10.14.255.43:10204/hora_km_inicial/\(idDetalle)"
-        
-        //team api
-        //let base = "https://toll-open-undertake-climb.trycloudflare.com/hora_km_inicial/\(idDetalle)"
-        
-        //team api nueva!!!!
         let base = "https://misc-cedar-beam-colon.trycloudflare.com/hora_km_inicial/\(idDetalle)"
         
         guard let url = URL(string: base) else {
@@ -57,7 +48,6 @@ struct FinalizarServicioView: View {
         
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
-       
         
         do {
             let (data, response) = try await URLSession.shared.data(for: request)
@@ -68,7 +58,6 @@ struct FinalizarServicioView: View {
                 }
                 return
             }
-            
             
             guard (200...299).contains(httpResponse.statusCode) else {
                 DispatchQueue.main.async {
@@ -92,7 +81,6 @@ struct FinalizarServicioView: View {
                 //convertir hora de string a date
                 if let horaInicioDate = self.convertirHoraStringADate(decodedResponse.horaInicio) {
                     self.horaInicio = horaInicioDate
-                    
                 } else {
                     print("No se pudo convertir la hora de inicio: \(decodedResponse.horaInicio)")
                 }
@@ -112,8 +100,6 @@ struct FinalizarServicioView: View {
     }
     
     // PUT - Finalizar servicio
-    
-    //validar km final
     func finalizarServicio() async {
         guard let kmFinalValue = kmFinal else {
             DispatchQueue.main.async {
@@ -123,7 +109,7 @@ struct FinalizarServicioView: View {
             return
         }
         
-        // checar que el km final sea mayor al km inicial
+        // Checar que el km final sea mayor al km inicial
         if let kmInicio = detalleInicial?.kmInicio {
             if kmFinalValue < Double(kmInicio) {
                 DispatchQueue.main.async {
@@ -139,103 +125,42 @@ struct FinalizarServicioView: View {
             self.errorMessage = nil
         }
         
-        //sofia API
-        //let urlString = "http://10.14.255.43:10204/hora_km_final/\(idDetalle)"
-        
-        //TEAM API
-        //let urlString = "https://toll-open-undertake-climb.trycloudflare.com/hora_km_final/\(idDetalle)"
-        
-        //TEAM API NUEVA!!
-        let urlString = "https://victoria-forecasts-headquarters-lemon.trycloudflare.com/hora_km_final/\(idDetalle)"
-        guard let url = URL(string: urlString) else {
-            DispatchQueue.main.async {
-                self.errorMessage = "Error al construir la URL"
-                self.isLoading = false
-            }
-            return
-        }
-        
-        var request = URLRequest(url: url)
-        request.httpMethod = "PUT"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-       
-
-        // obtener hora actual
+        // Obtener hora actual
         let formatter = DateFormatter()
         formatter.dateFormat = "HH:mm:ss"
-        formatter.timeZone = TimeZone.current //  zona horaria local
+        formatter.timeZone = TimeZone.current
         formatter.locale = Locale(identifier: "es_MX")
-        let horaFinalString = formatter.string(from: Date()) //  date() actual
-        
-        //cuerpo del put
-        let body: [String: Any] = [
-            "horaFinal": horaFinalString,
-            "kmFinal": Int(kmFinalValue)
-        ]
-        
-        print("PUT Request:")
-        print("Body: \(body)")
-        
-        //decodificar json con jsondecoer
-        guard let bodyData = try? JSONSerialization.data(withJSONObject: body) else {
-            DispatchQueue.main.async {
-                self.errorMessage = "Error al preparar los datos"
-                self.isLoading = false
-            }
-            return
-        }
-        
-        request.httpBody = bodyData
+        let horaFinalString = formatter.string(from: Date())
         
         do {
-            let (data, response) = try await URLSession.shared.data(for: request)
+            let api = AleAPI()
             
-            guard let httpResponse = response as? HTTPURLResponse else {
-                DispatchQueue.main.async {
-                    self.errorMessage = "Respuesta de servidor invalida"
-                    self.isLoading = false
-                }
-                return
-            }
+            // ✅ Una sola llamada que hace TODO
+            let response = try await api.finalizarServicio(
+                idDetalle: idDetalle,
+                horaFinal: horaFinalString,
+                kmFinal: Int(kmFinalValue)
+            )
             
-            print("PUT Status Code: \(httpResponse.statusCode)")
-            
-            // debug: imprimir la respuesta
-            if let jsonString = String(data: data, encoding: .utf8) {
-                print("PUT Response: \(jsonString)")
-            }
-            
-            guard (200...299).contains(httpResponse.statusCode) else {
-                DispatchQueue.main.async {
-                    self.errorMessage = "Error del servidor. Codigo: \(httpResponse.statusCode)"
-                    self.isLoading = false
-                }
-                return
-            }
-            
-            let decodedResponse = try JSONDecoder().decode(PutFinalizar.self, from: data)
-            
-            print("Servicio finalizado exitosamente")
-            print("Respuesta: \(decodedResponse)")
+            print("✅ Servicio finalizado exitosamente")
+            print("Hora final: \(response.horaFinal ?? "N/A")")
+            print("KM finales: \(response.kmFinal ?? 0)")
+            print("KM totales: \(response.kmTotales ?? 0)")
+            print("Tiempo total: \(response.tiempoTotal ?? 0) minutos")
+            print("Estatus: \(response.idEstatus ?? 0)")
             
             DispatchQueue.main.async {
                 self.errorMessage = nil
                 self.isLoading = false
-                //activa la navegacion
                 self.navegarAServicioFinalizado = true
             }
             
-        } catch let decodingError as DecodingError {
-            print("Error de decodificacion: \(decodingError)")
-            DispatchQueue.main.async {
-                self.errorMessage = "Error al procesar la respuesta del servidor"
-                self.isLoading = false
-            }
         } catch {
-            print("Error de conexion: \(error.localizedDescription)")
+            print("❌ Error al finalizar servicio: \(error)")
             DispatchQueue.main.async {
-                self.errorMessage = "Error de conexion: \(error.localizedDescription)"
+                self.errorMessage = "Error de conexión: \(error.localizedDescription)"
                 self.isLoading = false
+                self.errorKMFinal = true
             }
         }
     }
@@ -246,7 +171,7 @@ struct FinalizarServicioView: View {
         
         let formatter = DateFormatter()
         formatter.dateFormat = "HH:mm:ss"
-        formatter.timeZone = TimeZone.current // zona horaria local
+        formatter.timeZone = TimeZone.current
         formatter.locale = Locale(identifier: "es_MX")
         
         guard let hora = formatter.date(from: horaSinMicrosegundos) else {
@@ -254,7 +179,6 @@ struct FinalizarServicioView: View {
             return nil
         }
         
-        // cambia solo la hora con la fecha actual
         let calendar = Calendar.current
         let components = calendar.dateComponents([.hour, .minute, .second], from: hora)
         
@@ -461,7 +385,6 @@ struct FinalizarServicioView: View {
                 }
                 .padding(.top, 50)
             }
-
             
             // BOTONES
             VStack {
@@ -471,16 +394,8 @@ struct FinalizarServicioView: View {
                         errorMessage = "Debes ingresar el kilometraje final"
                     } else {
                         Task {
-                            do {
-                                let api = AleAPI()
-
-                                try await api.actualizarEstatus(idServicio: idDetalle, idEstatus: 3)
-                                
-                                await finalizarServicio()
-                                
-                            } catch {
-                                print("Error al finalizar servicio")
-                            }
+                            // ✅ Solo llama a finalizarServicio - hace TODO
+                            await finalizarServicio()
                         }
                     }
                 }) {
@@ -508,7 +423,7 @@ struct FinalizarServicioView: View {
                 
                 Spacer()
                     .frame(height: 20)
-                    
+                
                 Button(action: {
                     dismiss()
                 }) {
@@ -522,7 +437,6 @@ struct FinalizarServicioView: View {
                 .background(RoundedRectangle(cornerRadius: 20).fill(Color(gris4)))
             }
             .padding(.top, 50)
-            
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .background(gris2.opacity(0.3))

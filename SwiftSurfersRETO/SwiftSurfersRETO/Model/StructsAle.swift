@@ -56,11 +56,24 @@ struct CrearServicioResponse: Codable {
 
 struct IniciarServicioResponse: Codable {
     let success: Bool
-    let idEstatus: Int
+    let idEstatus: Int?
+    let horaInicio: String?
+    let kmInicio: Int?
 }
 
+// ✅ ACTUALIZADO - Ahora incluye todos los datos que retorna el endpoint
 struct FinalizarServicioResponse: Codable {
     let success: Bool
-    let idEstatus: Int
+    let idDetalle: Int?
+    let horaFinal: String?
+    let kmFinal: Int?
+    let kmTotales: Int?
+    let tiempoTotal: Int?
+    let idEstatus: Int?
 }
 
+// ✅ NUEVO - Request para finalizar servicio
+struct FinalizarServicioRequest: Codable {
+    let horaFinal: String
+    let kmFinal: Int
+}

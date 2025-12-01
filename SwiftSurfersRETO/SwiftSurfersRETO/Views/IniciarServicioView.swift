@@ -1,3 +1,8 @@
+//
+//  IniciarServicioView.swift
+//  SwiftSurfersRETO
+//
+
 import SwiftUI
 
 struct IniciarServicioView: View {
@@ -135,8 +140,6 @@ struct IniciarServicioView: View {
                                     kmInicio: kmInicial!
                                 )
                                 
-                                try await api.actualizarEstatus(idServicio: idServicio, idEstatus: 2)
-                                
                                 print("Servicio iniciado con éxito.")
                                 
                                 horaInicio = Date()
@@ -197,7 +200,6 @@ struct IniciarServicioView: View {
     }
 }
     
-
 #Preview {
     NavigationStack {
         IniciarServicioView(idServicio: 5)
