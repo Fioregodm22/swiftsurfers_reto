@@ -135,14 +135,14 @@ struct FinalizarServicioView: View {
         do {
             let api = AleAPI()
             
-            // ✅ Una sola llamada que hace TODO
+            // Una sola llamada que hace TODO
             let response = try await api.finalizarServicio(
                 idDetalle: idDetalle,
                 horaFinal: horaFinalString,
                 kmFinal: Int(kmFinalValue)
             )
             
-            print("✅ Servicio finalizado exitosamente")
+            print("Servicio finalizado exitosamente")
             print("Hora final: \(response.horaFinal ?? "N/A")")
             print("KM finales: \(response.kmFinal ?? 0)")
             print("KM totales: \(response.kmTotales ?? 0)")
@@ -156,7 +156,7 @@ struct FinalizarServicioView: View {
             }
             
         } catch {
-            print("❌ Error al finalizar servicio: \(error)")
+            print("Error al finalizar servicio: \(error)")
             DispatchQueue.main.async {
                 self.errorMessage = "Error de conexión: \(error.localizedDescription)"
                 self.isLoading = false
@@ -384,6 +384,10 @@ struct FinalizarServicioView: View {
                         .offset(y: -18)
                 }
                 .padding(.top, 50)
+                //NUEVO PARA QUE SE OCULTE EL TECLADO!
+                .onTapGesture {
+                        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+                    }
             }
             
             // BOTONES
@@ -394,7 +398,7 @@ struct FinalizarServicioView: View {
                         errorMessage = "Debes ingresar el kilometraje final"
                     } else {
                         Task {
-                            // ✅ Solo llama a finalizarServicio - hace TODO
+                            // Solo llama a finalizarServicio - hace TODO
                             await finalizarServicio()
                         }
                     }
