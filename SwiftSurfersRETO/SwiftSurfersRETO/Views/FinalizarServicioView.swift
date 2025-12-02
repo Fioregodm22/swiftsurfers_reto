@@ -224,7 +224,7 @@ struct FinalizarServicioView: View {
                     
                     VStack(alignment: .leading, spacing: 8) {
                         Text("Finalizar Servicio")
-                            .padding(.top, 25)
+                            .padding(.top, 40)
                             .padding(.leading, 5)
                             .foregroundStyle(Color.white)
                             .bold()
@@ -383,8 +383,8 @@ struct FinalizarServicioView: View {
                         .foregroundStyle(.white)
                         .offset(y: -18)
                 }
-                .padding(.top, 50)
-                //NUEVO PARA QUE SE OCULTE EL TECLADO!
+                .padding(.top, 30)
+                //OCULTAR EL TECLADO
                 .onTapGesture {
                         UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
                     }
@@ -411,7 +411,6 @@ struct FinalizarServicioView: View {
                 .frame(height: 50)
                 .foregroundStyle(.white)
                 .background(RoundedRectangle(cornerRadius: 20).fill(Color(azul)))
-                .padding(.top, -50)
                 .disabled(isLoading || detalleInicial == nil)
                 .opacity((isLoading || detalleInicial == nil) ? 0.6 : 1.0)
                 .navigationDestination(isPresented: $navegarAServicioFinalizado) {
@@ -425,8 +424,8 @@ struct FinalizarServicioView: View {
                     Text(errorMessage ?? "Debes ingresar un kilometraje valido mayor al kilometraje inicial")
                 }
                 
-                Spacer()
-                    .frame(height: 20)
+                //Spacer()
+                  //  .frame(height: 20)
                 
                 Button(action: {
                     dismiss()
@@ -439,8 +438,11 @@ struct FinalizarServicioView: View {
                 .frame(height: 50)
                 .foregroundStyle(.white)
                 .background(RoundedRectangle(cornerRadius: 20).fill(Color(gris4)))
+                
             }
-            .padding(.top, 50)
+            //ESPACIO BOTONES
+            .padding(.bottom, 100)
+            
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .background(gris2.opacity(0.3))
