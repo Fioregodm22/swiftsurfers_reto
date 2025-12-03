@@ -13,8 +13,7 @@ struct AgendaView: View {
         let hoy = Calendar.current.startOfDay(for: Date())
         let manana = Calendar.current.date(byAdding: .day, value: 1, to: hoy)!
         
-        return servicios.filter { servicio in
-            
+        let filtradosPorFecha = servicios.filter { servicio in
             let formatter = DateFormatter()
             formatter.dateFormat = "yyyy-MM-dd"
             
@@ -30,6 +29,28 @@ struct AgendaView: View {
                 return fechaServicioSinHora == manana
             }
         }
+        
+        return filtradosPorFecha.sorted(by: { servicio1, servicio2 in
+            
+            func prioridad(estatus: Int) -> Int {
+                switch estatus {
+                case 2: return 1
+                case 1: return 2
+                case 3: return 3
+                default: return 4 
+                }
+            }
+            
+            let prioridad1 = prioridad(estatus: servicio1.idEstatus)
+            let prioridad2 = prioridad(estatus: servicio2.idEstatus)
+            
+
+            if prioridad1 != prioridad2 {
+                return prioridad1 < prioridad2
+            }
+            
+            return servicio1.hora > servicio2.hora
+        })
     }
     
     var formattedDate: String {

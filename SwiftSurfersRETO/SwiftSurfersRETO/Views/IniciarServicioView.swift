@@ -6,7 +6,8 @@
 import SwiftUI
 
 struct IniciarServicioView: View {
-    @State public var idServicio: Int
+    let idServicio: Int
+    @Binding var hideTabBar: Bool
     
     @Environment(\.dismiss) var dismiss
     @State private var navegarAConfirmarInicio = false
@@ -144,6 +145,8 @@ struct IniciarServicioView: View {
                 Button(action: {
                     if kmInicial == nil {
                             errorKMInicial.toggle()
+                    } else if kmInicial! <= 0 {
+                        errorKMInicial.toggle()
                     }
                     else {
                         Task {
@@ -176,7 +179,7 @@ struct IniciarServicioView: View {
                     .background(RoundedRectangle(cornerRadius: 20).fill(Color(azul)))
                     .bold(true)
                     .navigationDestination(isPresented: $navegarAConfirmarInicio) {
-                        ServicioIniciado(shouldDismissToRoot: $shouldDismissToRoot)
+                        ServicioIniciado(hideTabBar: $hideTabBar, shouldDismissToRoot: $shouldDismissToRoot)
                     }
                     .alert("Error", isPresented: $errorKMInicial) {
                         Button("Aceptar") {}
@@ -203,7 +206,8 @@ struct IniciarServicioView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .background(gris2.opacity(0.3))
-        .toolbar(.hidden)
+        .toolbar(.hidden, for: .tabBar)
+        .navigationBarHidden(true)
         .onChange(of: shouldDismissToRoot) { oldValue, newValue in
             if newValue {
                 dismiss()
@@ -217,6 +221,6 @@ struct IniciarServicioView: View {
     
 #Preview {
     NavigationStack {
-        IniciarServicioView(idServicio: 5)
+        IniciarServicioView(idServicio: 5, hideTabBar: .constant(false))
     }
 }

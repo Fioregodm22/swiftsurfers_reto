@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct ServicioIniciado: View {
+    @Binding var hideTabBar: Bool
     @Binding var shouldDismissToRoot: Bool
     @Environment(\.dismiss) var dismiss
     
@@ -42,13 +43,14 @@ struct ServicioIniciado: View {
                 .padding(.top, 300)
             }
             .ignoresSafeArea(edges: .all)
-            .toolbar(.hidden)
+            .toolbar(.hidden, for: .tabBar)
+            .navigationBarHidden(true)
         }
     }
 }
 
 #Preview {
     NavigationStack {
-        ServicioIniciado(shouldDismissToRoot: .constant(false))
+        ServicioIniciado(hideTabBar: .constant(false), shouldDismissToRoot: .constant(false))
     }
 }
