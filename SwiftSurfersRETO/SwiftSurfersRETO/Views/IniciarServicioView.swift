@@ -12,10 +12,11 @@ struct IniciarServicioView: View {
     @Environment(\.dismiss) var dismiss
     @State private var navegarAConfirmarInicio = false
     @State private var shouldDismissToRoot = false
-    @State private var kmInicial: Int? = nil
-    @State private var distanciaRecorrida: Double? = nil
-    @State private var calendario = Calendar.current
-    @State private var horaInicio = Date()
+    @State public var kmInicial: Int? = nil
+    @State public var distanciaRecorrida: Double? = nil
+    @State var calendario = Calendar.current
+    @State var horaInicio = Date()
+    @FocusState private var keypad: Bool
         
     @State private var errorKMInicial: Bool = false
     
@@ -26,6 +27,7 @@ struct IniciarServicioView: View {
     let azul = Color(red: 1/255.0, green: 104/255.0, blue: 138/255.0)
     let naranja = Color(red: 255/255.0, green: 153/255.0, blue: 0/255.0)
     let blancoClaro = Color(red: 251/255.0, green: 251/255.0, blue: 251/255.0)
+    
     
     var body: some View {
         
@@ -104,6 +106,19 @@ struct IniciarServicioView: View {
                             HStack {
                                 Spacer()
                                 TextField("",value: $kmInicial, format: .number)
+                                    .keyboardType(.decimalPad)
+                                    .keyboardType(.numberPad)
+                                    .focused($keypad)
+                                    .toolbar {
+                                        ToolbarItem(placement: .keyboard) {
+                                            HStack {
+                                                Spacer()
+                                                Button("Listo") {
+                                                    keypad = false
+                                                }
+                                            }
+                                        }
+                                    }
                                     .padding(.horizontal, 16)
                                     .frame(width: 230, height: 40)
                                     .background(RoundedRectangle(cornerRadius: 20).fill(Color(gris1)))
