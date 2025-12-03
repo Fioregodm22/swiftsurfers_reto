@@ -6,15 +6,16 @@
 import SwiftUI
 
 struct IniciarServicioView: View {
-    @State public var idServicio: Int
+    let idServicio: Int
+    @Binding var hideTabBar: Bool
     
     @Environment(\.dismiss) var dismiss
     @State private var navegarAConfirmarInicio = false
     @State private var shouldDismissToRoot = false
-    @State public var kmInicial: Int? = nil
-    @State public var distanciaRecorrida: Double? = nil
-    @State var calendario = Calendar.current
-    @State var horaInicio = Date()
+    @State private var kmInicial: Int? = nil
+    @State private var distanciaRecorrida: Double? = nil
+    @State private var calendario = Calendar.current
+    @State private var horaInicio = Date()
         
     @State private var errorKMInicial: Bool = false
     
@@ -126,7 +127,7 @@ struct IniciarServicioView: View {
             }
             
             VStack {
-                Button(action: { 
+                Button(action: {
                     if kmInicial == nil {
                             errorKMInicial.toggle()
                     } else if kmInicial! <= 0 {
@@ -163,7 +164,7 @@ struct IniciarServicioView: View {
                     .background(RoundedRectangle(cornerRadius: 20).fill(Color(azul)))
                     .bold(true)
                     .navigationDestination(isPresented: $navegarAConfirmarInicio) {
-                        ServicioIniciado(shouldDismissToRoot: $shouldDismissToRoot)
+                        ServicioIniciado(hideTabBar: $hideTabBar, shouldDismissToRoot: $shouldDismissToRoot)
                     }
                     .alert("Error", isPresented: $errorKMInicial) {
                         Button("Aceptar") {}
@@ -190,7 +191,8 @@ struct IniciarServicioView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .background(gris2.opacity(0.3))
-        .toolbar(.hidden)
+        .toolbar(.hidden, for: .tabBar)
+        .navigationBarHidden(true)
         .onChange(of: shouldDismissToRoot) { oldValue, newValue in
             if newValue {
                 dismiss()
@@ -204,6 +206,6 @@ struct IniciarServicioView: View {
     
 #Preview {
     NavigationStack {
-        IniciarServicioView(idServicio: 5)
+        IniciarServicioView(idServicio: 5, hideTabBar: .constant(false))
     }
 }

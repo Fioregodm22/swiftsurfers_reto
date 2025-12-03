@@ -104,8 +104,11 @@ struct DetalleView: View {
                 await cargarDetalle()
             }
         }
+        // CRÍTICO: Solo restaurar hideTabBar si NO estamos navegando a una vista hija
         .onDisappear{
-            hideTabBar = false
+            if !navegarAIniciar && !navegarAFinalizar {
+                hideTabBar = false
+            }
         }
     }
     
@@ -342,7 +345,7 @@ struct DetalleView: View {
                         )
                     }
                     .navigationDestination(isPresented: $navegarAIniciar) {
-                        IniciarServicioView(idServicio: servicio.idServicio)
+                        IniciarServicioView(idServicio: servicio.idServicio, hideTabBar: $hideTabBar)
                     }
                 } else if servicio.idEstatus == 2 {
                     Button(action: {
@@ -365,7 +368,7 @@ struct DetalleView: View {
                         )
                     }
                     .navigationDestination(isPresented: $navegarAFinalizar) {
-                        FinalizarServicioView(idDetalle: detalle.idDetalle)
+                        FinalizarServicioView(hideTabBar: $hideTabBar, idDetalle: detalle.idDetalle)
                     }
                 }
                 

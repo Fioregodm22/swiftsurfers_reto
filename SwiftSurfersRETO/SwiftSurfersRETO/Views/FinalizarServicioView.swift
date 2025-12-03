@@ -10,6 +10,7 @@ import SwiftUI
 struct FinalizarServicioView: View {
     
     //servicio a finalizar
+    @Binding var hideTabBar: Bool
     let idDetalle: Int
     
     @State private var detalleInicial: GetInicio? = nil
@@ -414,7 +415,7 @@ struct FinalizarServicioView: View {
                 .disabled(isLoading || detalleInicial == nil)
                 .opacity((isLoading || detalleInicial == nil) ? 0.6 : 1.0)
                 .navigationDestination(isPresented: $navegarAServicioFinalizado) {
-                    ServicioFinalizado(shouldDismissToRoot: $shouldDismissToRoot)
+                    ServicioFinalizado(hideTabBar: $hideTabBar, shouldDismissToRoot: $shouldDismissToRoot)
                 }
                 .alert("Error", isPresented: $errorKMFinal) {
                     Button("Aceptar") {
@@ -466,5 +467,5 @@ struct FinalizarServicioView: View {
 }
 
 #Preview {
-    FinalizarServicioView(idDetalle: 10)
+    FinalizarServicioView(hideTabBar: .constant(false), idDetalle: 10)
 }
